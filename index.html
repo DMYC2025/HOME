@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="google-site-verification" content="lEJqM5jKwoWplwhVu_EZRgJ_wvvVjM_1pUyMZK-zO48" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Makers Youth & Sport Club</title>
+    <link rel="icon" type="image/png" href="https://dilnuka13.github.io/Dream_Makers/logo.png">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { 
+                        brand: {
+                            green: '#16a34a', // Primary Green
+                            dark: '#020617',  // Deep Black
+                            ash: '#94a3b8',   // Ash Gray
+                            light: '#f8fafc', // White/Ash
+                            accent: '#22c55e' // Bright Green
+                        }
+                    },
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif']
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                        'modal-pop': 'modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        modalPop: {
+                            '0%': { opacity: '0', transform: 'scale(0.95) translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
+                        }
+                    }
+                } 
+            } 
+        }
+    </script>
+
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Supabase JS -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        
+        /* Glass Header */
+        .glass-header { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(16px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .dark .glass-header { 
+            background: rgba(2, 6, 23, 0.9); 
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Nav Link Animation */
+        .nav-link { position: relative; font-weight: 600; transition: color 0.3s; }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 3px;
+            background: #16a34a; transition: width 0.3s ease-out; border-radius: 2px;
+        }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .nav-link.active { color: #16a34a; }
+        .dark .nav-link.active { color: #22c55e; }
+
+        /* Mobile Menu */
+        #mobile-menu { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); max-height: 0; opacity: 0; overflow: hidden; transform: translateY(-10px); }
+        #mobile-menu.open { max-height: 600px; opacity: 1; transform: translateY(0); }
+
+        /* Slideshow */
+        .slide-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease-in-out, transform 10s ease-out; z-index: 0; filter: brightness(0.6); transform: scale(1); }
+        .slide-bg.active { opacity: 1; transform: scale(1.1); }
+
+        /* Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+        
+        /* Calendar & UI Elements */
+        .calendar-widget { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .calendar-widget:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -5px rgba(22, 163, 74, 0.15); }
+        
+        .cal-day-cell:hover { background-color: rgba(22, 163, 74, 0.1); color: #16a34a; }
+        .is-today { background-color: #16a34a; color: white; border: none; font-weight: 700; box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3); }
+        .dark .is-today { background-color: #22c55e; color: #020617; }
+        
+        .is-poya::after { content: ''; position: absolute; bottom: 3px; width: 4px; height: 4px; background-color: #eab308; border-radius: 50%; }
+        .is-public::after { content: ''; position: absolute; bottom: 3px; width: 4px; height: 4px; background-color: #ef4444; border-radius: 50%; }
+        .is-event::before { content: ''; position: absolute; top: 3px; right: 3px; width: 5px; height: 5px; background-color: #3b82f6; border-radius: 50%; border: 1px solid white; z-index: 10; }
+        
+        /* Translate Hide */
+        .goog-te-banner-frame.skiptranslate { display: none !important; } body { top: 0px !important; } .goog-te-gadget-simple { background-color: transparent !important; border: none !important; }
+
+        /* Partner Logos Grayscale Hover */
+        .partner-logo { filter: grayscale(100%); opacity: 0.7; transition: all 0.4s ease; }
+        .partner-logo:hover { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
+        
+        /* Input Autofill Fix */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px white inset !important;
+            -webkit-text-fill-color: #1e293b !important;
+        }
+        .dark input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px #0f172a inset !important;
+            -webkit-text-fill-color: white !important;
+        }
+    </style>
+</head>
+<body class="bg-brand-light text-slate-800 dark:bg-brand-dark dark:text-slate-100 transition-colors duration-500 overflow-x-hidden selection:bg-brand-green selection:text-white">
+
+    <!-- Preloader -->
+    <div id="preloader" class="fixed inset-0 z-[100] bg-white dark:bg-brand-dark flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="text-center p-5">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-brand-green dark:text-white tracking-tighter animate-pulse-slow">Dream Makers</h1>
+            <p class="text-lg md:text-xl text-brand-ash mt-3 font-light tracking-[0.3em] uppercase animate-float">Youth & Sport Club</p>
+            <div class="h-1 bg-brand-green mt-8 mx-auto rounded-full w-32 relative overflow-hidden">
+                <div class="absolute inset-0 bg-white/50 w-full h-full animate-ping"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER / CONTROL PANEL -->
+    <header class="fixed top-0 inset-x-0 z-50 glass-header shadow-sm transition-all duration-300 h-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 h-full">
+            <div class="flex items-center justify-between h-full">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer group" onclick="showSection('home')">
+                    <div class="relative w-10 h-10">
+                        <div class="absolute inset-0 bg-green-500 rounded-full blur-md opacity-20 group-hover:opacity-50 transition"></div>
+                        <img src="https://dilnuka13.github.io/Dream_Makers/logo.png" class="relative h-10 w-10 object-contain drop-shadow-md group-hover:rotate-12 transition duration-500">
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-lg text-slate-900 dark:text-white leading-none tracking-tight">Dream Makers</h1>
+                        <p class="text-[10px] font-bold text-brand-green uppercase tracking-widest">Dikhengama</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden lg:flex items-center space-x-8">
+                    <button onclick="showSection('home')" id="nav-home" class="nav-link active text-sm text-slate-600 dark:text-slate-300 hover:text-brand-green dark:hover:text-white">Home</button>
+                    <button onclick="showSection('about')" id="nav-about" class="nav-link text-sm text-slate-600 dark:text-slate-300 hover:text-brand-green dark:hover:text-white">About</button>
+                    <button onclick="showSection('sports')" id="nav-sports" class="nav-link text-sm text-slate-600 dark:text-slate-300 hover:text-brand-green dark:hover:text-white">Sports</button>
+                    <button onclick="showSection('events')" id="nav-events" class="nav-link text-sm text-slate-600 dark:text-slate-300 hover:text-brand-green dark:hover:text-white">Events</button>
+                    <button onclick="showSection('gallery')" id="nav-gallery" class="nav-link text-sm text-slate-600 dark:text-slate-300 hover:text-brand-green dark:hover:text-white">Gallery</button>
+                    <button onclick="showSection('downloads')" id="nav-downloads" class="nav-link text-sm text-slate-600 dark:text-slate-300 hover:text-brand-green dark:hover:text-white">Downloads</button>
+                    <button onclick="showSection('contact')" id="nav-contact" class="nav-link text-sm text-slate-600 dark:text-slate-300 hover:text-brand-green dark:hover:text-white">Contact</button>
+                </nav>
+
+                <!-- Right Controls -->
+                <div class="hidden lg:flex items-center gap-4">
+                    <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-brand-green hover:text-white dark:hover:bg-brand-green dark:hover:text-white transition flex items-center justify-center shadow-sm">
+                        <i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:inline"></i>
+                    </button>
+                    <button onclick="openJoinModal()" class="px-6 py-2.5 bg-brand-green text-white text-sm font-bold rounded-full hover:bg-green-700 transition shadow-lg shadow-green-600/20 transform hover:-translate-y-0.5">
+                        Join Us
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="lg:hidden flex items-center gap-4">
+                    <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center">
+                        <i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:inline"></i>
+                    </button>
+                    <button onclick="toggleMobileMenu()" class="text-slate-800 dark:text-white text-2xl focus:outline-none w-10 h-10 flex items-center justify-center">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div id="mobile-menu" class="lg:hidden bg-white/95 dark:bg-brand-dark/95 border-b border-slate-200 dark:border-slate-800 backdrop-blur-xl absolute top-20 left-0 w-full shadow-2xl z-40">
+            <div class="px-4 py-6 space-y-2">
+                <button onclick="showSection('home'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-xl text-sm font-bold hover:bg-green-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">Home</button>
+                <button onclick="showSection('about'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-xl text-sm font-bold hover:bg-green-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">About Us</button>
+                <button onclick="showSection('sports'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-xl text-sm font-bold hover:bg-green-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">Sports</button>
+                <button onclick="showSection('events'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-xl text-sm font-bold hover:bg-green-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">Events</button>
+                <button onclick="showSection('gallery'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-xl text-sm font-bold hover:bg-green-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">Gallery</button>
+                <button onclick="showSection('downloads'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-xl text-sm font-bold hover:bg-green-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">Downloads</button>
+                <button onclick="showSection('contact'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-xl text-sm font-bold hover:bg-green-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200">Contact</button>
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-800 mt-2">
+                    <button onclick="openJoinModal(); toggleMobileMenu()" class="w-full py-3 bg-brand-green text-white rounded-xl font-bold text-center shadow-lg">Join Member</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="w-full pt-28 p-4 lg:p-8 space-y-12 max-w-7xl mx-auto min-h-screen relative">
+        
+        <!-- 1. HOME SECTION -->
+        <div id="section-home" class="page-section animate-fade-in-up">
+            <!-- HERO -->
+            <section class="relative rounded-[3rem] overflow-hidden shadow-2xl shadow-green-900/10 min-h-[550px] flex items-center p-8 lg:p-16 text-white group ring-1 ring-black/5 dark:ring-white/5">
+                <div id="hero-slideshow" class="absolute inset-0 z-0 bg-brand-dark">
+                    <!-- Slideshow via JS -->
+                </div>
+                <!-- Darker Gradient for better text contrast with green/black theme -->
+                <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent z-10"></div>
+                
+                <div class="relative z-20 max-w-3xl animate-float">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-500/20 backdrop-blur-md border border-green-500/30 text-green-300 font-bold text-xs mb-8 shadow-lg">
+                        <i class="fas fa-crown text-[10px]"></i> <span>Pride of Dikhengama</span>
+                    </div>
+                    <h1 class="text-5xl lg:text-7xl font-black mb-6 leading-tight drop-shadow-2xl">
+                        Future Winning<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">Dream Makers</span>
+                    </h1>
+                    <p class="text-lg text-slate-300 mb-10 font-light leading-relaxed max-w-lg drop-shadow-md">
+                        Empowering youth through sports, discipline, and unity to build a stronger community.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center gap-6">
+                        <button onclick="openJoinModal()" class="px-10 py-4 bg-brand-green text-white rounded-full font-bold shadow-xl hover:bg-green-600 transition transform hover:-translate-y-1 flex items-center gap-3">
+                            <i class="fas fa-user-plus"></i> <span>Join Now</span>
+                        </button>
+                        <div id="home-social-links" class="flex items-center gap-3">
+                            <!-- Social JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Quick Links -->
+            <section id="quick-links-section" class="mt-16 hidden">
+                <div class="flex items-center gap-3 mb-6 px-2">
+                    <div class="w-1.5 h-8 bg-brand-green rounded-full"></div>
+                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white">Quick Links</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="quick-links-container">
+                    <!-- JS -->
+                </div>
+            </section>
+
+            <!-- CALENDAR AND STATS -->
+            <section class="mt-16">
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    
+                    <!-- CALENDAR -->
+                    <div class="w-full lg:w-[380px] shrink-0" data-aos="fade-right">
+                        <div class="flex items-center gap-3 mb-6 px-2">
+                            <div class="w-1.5 h-8 bg-brand-green rounded-full"></div>
+                            <h3 class="text-xl font-bold text-slate-800 dark:text-white">Events Calendar</h3>
+                        </div>
+
+                        <div class="calendar-widget bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700/50">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 id="cal-month-year" class="text-lg font-bold text-slate-800 dark:text-white tracking-tight"></h2>
+                                <div class="flex gap-2">
+                                    <button onclick="changeMonth(-1)" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-brand-green hover:text-white dark:hover:bg-brand-green text-slate-600 dark:text-slate-300 transition flex items-center justify-center"><i class="fas fa-chevron-left text-xs"></i></button>
+                                    <button onclick="changeMonth(1)" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-brand-green hover:text-white dark:hover:bg-brand-green text-slate-600 dark:text-slate-300 transition flex items-center justify-center"><i class="fas fa-chevron-right text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-7 mb-3 text-center">
+                                <div class="text-[10px] font-bold text-red-500 uppercase">Su</div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase">Mo</div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase">Tu</div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase">We</div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase">Th</div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase">Fr</div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase">Sa</div>
+                            </div>
+                            <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
+                            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
+                                <h4 class="text-[10px] font-bold text-brand-ash uppercase tracking-wider mb-3">Holidays & Events</h4>
+                                <div class="space-y-2 overflow-y-auto max-h-[160px] no-scrollbar pr-1" id="month-holidays-list"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STATS GRID -->
+                    <div class="flex-1 w-full" data-aos="fade-left">
+                        <div class="flex items-center gap-3 mb-6 px-2">
+                            <div class="w-1.5 h-8 bg-brand-green rounded-full"></div>
+                            <h3 class="text-xl font-bold text-slate-800 dark:text-white">Club Statistics</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl flex items-center gap-6 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-xl hover:border-green-500/30 transition duration-300 group">
+                                <div class="w-16 h-16 rounded-2xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-brand-green text-3xl group-hover:scale-110 transition"><i class="fas fa-users"></i></div>
+                                <div><h4 class="text-4xl font-black text-slate-800 dark:text-white leading-none mb-1" id="stat-members">0</h4><p class="text-xs text-brand-ash uppercase tracking-wider font-bold">Active Members</p></div>
+                            </div>
+                            <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl flex items-center gap-6 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-xl hover:border-green-500/30 transition duration-300 group">
+                                <div class="w-16 h-16 rounded-2xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-brand-green text-3xl group-hover:scale-110 transition"><i class="fas fa-running"></i></div>
+                                <div><h4 class="text-4xl font-black text-slate-800 dark:text-white leading-none mb-1" id="stat-sports">0</h4><p class="text-xs text-brand-ash uppercase tracking-wider font-bold">Sports Teams</p></div>
+                            </div>
+                            <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl flex items-center gap-6 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-xl hover:border-green-500/30 transition duration-300 group">
+                                <!-- Fixed Icon for Events Held -->
+                                <div class="w-16 h-16 rounded-2xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-brand-green text-3xl group-hover:scale-110 transition"><i class="fas fa-calendar-day"></i></div>
+                                <div><h4 class="text-4xl font-black text-slate-800 dark:text-white leading-none mb-1" id="stat-events">0</h4><p class="text-xs text-brand-ash uppercase tracking-wider font-bold">Events Held</p></div>
+                            </div>
+                            <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl flex items-center gap-6 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-xl hover:border-green-500/30 transition duration-300 group">
+                                <div class="w-16 h-16 rounded-2xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-brand-green text-3xl group-hover:scale-110 transition"><i class="fas fa-history"></i></div>
+                                <div><h4 class="text-4xl font-black text-slate-800 dark:text-white leading-none mb-1" id="stat-since">2025</h4><p class="text-xs text-brand-ash uppercase tracking-wider font-bold">Club Since</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 2. ABOUT SECTION -->
+        <div id="section-about" class="page-section hidden animate-fade-in-up">
+            <header class="mb-10 text-center max-w-2xl mx-auto">
+                <span class="text-brand-green font-bold uppercase tracking-widest text-xs mb-2 block">Who We Are</span>
+                <h2 class="text-3xl md:text-5xl font-black text-slate-800 dark:text-white">About Dream Makers</h2>
+            </header>
+            <div class="grid md:grid-cols-2 gap-8 mb-16">
+                <div class="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 hover:shadow-2xl transition duration-500 hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-green-50 dark:bg-green-900/30 rounded-2xl flex items-center justify-center text-brand-green mb-6 text-2xl"><i class="fas fa-eye"></i></div>
+                    <h3 class="font-bold text-2xl text-slate-800 dark:text-white mb-4">Our Vision</h3>
+                    <p class="text-slate-500 dark:text-slate-400 leading-relaxed text-lg">To be the beacon of hope and empowerment for the youth of Dikhengama, fostering a generation of disciplined, united, and successful individuals who contribute positively to society.</p>
+                </div>
+                 <div class="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 hover:shadow-2xl transition duration-500 hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-green-50 dark:bg-green-900/30 rounded-2xl flex items-center justify-center text-brand-green mb-6 text-2xl"><i class="fas fa-bullseye"></i></div>
+                    <h3 class="font-bold text-2xl text-slate-800 dark:text-white mb-4">Our Mission</h3>
+                    <p class="text-slate-500 dark:text-slate-400 leading-relaxed text-lg">Creating opportunities through sports, education, and community service to develop leadership skills, teamwork, and social responsibility among our members.</p>
+                </div>
+            </div>
+            
+            <h3 class="font-bold text-2xl text-slate-800 dark:text-white mb-8 border-l-4 border-brand-green pl-4">Executive Committee</h3>
+            <div id="officers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20"></div>
+
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-slate-800 dark:text-white">Club Members</h3>
+            </div>
+            <div class="bg-white dark:bg-slate-800 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase text-xs font-bold">
+                            <tr>
+                                <th class="px-8 py-5">Name</th>
+                                <th class="px-8 py-5 text-center">Age</th>
+                                <th class="px-8 py-5 text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700" id="members-list">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. SPORTS SECTION -->
+        <div id="section-sports" class="page-section hidden animate-fade-in-up">
+            <header class="mb-10">
+                <h2 class="text-4xl font-black text-slate-800 dark:text-white">Sports Teams</h2>
+                <p class="text-slate-500 dark:text-slate-400 mt-2">Our talented athletes in action.</p>
+            </header>
+            <div id="sports-list"></div>
+        </div>
+
+        <!-- 4. EVENTS SECTION -->
+        <div id="section-events" class="page-section hidden animate-fade-in-up">
+            <header class="mb-10">
+                <h2 class="text-4xl font-black text-slate-800 dark:text-white">Club Events</h2>
+                <p class="text-slate-500 dark:text-slate-400 mt-2">Upcoming and past activities.</p>
+            </header>
+            <div id="events-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        </div>
+
+        <!-- 5. GALLERY SECTION -->
+        <div id="section-gallery" class="page-section hidden animate-fade-in-up">
+            <header class="flex justify-between items-end mb-10">
+                <div>
+                    <h2 class="text-4xl font-black text-slate-800 dark:text-white">Photo Gallery</h2>
+                    <p class="text-slate-500 dark:text-slate-400 mt-2">Capturing memorable moments.</p>
+                </div>
+            </header>
+            <div id="gallery-albums-view">
+                <div id="albums-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8"></div>
+            </div>
+            <div id="gallery-images-view" class="hidden animate-fade-in-up">
+                <button onclick="closeAlbum()" class="mb-8 flex items-center gap-2 text-slate-500 hover:text-brand-green transition font-bold text-sm bg-white dark:bg-slate-800 px-5 py-2.5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <i class="fas fa-arrow-left"></i> Back to Albums
+                </button>
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h3 id="current-album-title" class="text-3xl font-bold text-slate-800 dark:text-white mb-1">Album Title</h3>
+                        <p id="current-album-date" class="text-sm text-slate-500 dark:text-slate-400 font-mono">Date</p>
+                    </div>
+                    <button onclick="shareAlbum()" class="bg-green-50 text-brand-green dark:bg-green-900/30 dark:text-green-400 px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-green-100 transition"><i class="fas fa-share-alt mr-2"></i> Share Album</button>
+                </div>
+                <div id="album-images-grid" class="columns-1 md:columns-3 gap-6 space-y-6"></div>
+            </div>
+        </div>
+
+        <!-- 6. DOWNLOADS SECTION -->
+        <div id="section-downloads" class="page-section hidden animate-fade-in-up">
+            <header class="mb-10">
+                <h2 class="text-4xl font-black text-slate-800 dark:text-white">Downloads</h2>
+                <p class="text-slate-500 dark:text-slate-400 mt-2">Official documents and resources.</p>
+            </header>
+            <div id="downloads-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+
+        <!-- 7. CONTACT SECTION -->
+        <div id="section-contact" class="page-section hidden animate-fade-in-up">
+            <header class="mb-10 text-center">
+                <h2 class="text-4xl font-black text-slate-800 dark:text-white">Get in Touch</h2>
+                <p class="text-slate-500 dark:text-slate-400 mt-2">We'd love to hear from you.</p>
+            </header>
+            <div class="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+                <div class="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-xl">
+                    <form id="contact-form" class="space-y-5">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-400 uppercase ml-1">Your Name</label>
+                            <input type="text" id="msg-name" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 dark:text-white focus:ring-2 focus:ring-brand-green outline-none transition">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-400 uppercase ml-1">Email Address</label>
+                            <input type="email" id="msg-email" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 dark:text-white focus:ring-2 focus:ring-brand-green outline-none transition">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-400 uppercase ml-1">Message</label>
+                            <textarea id="msg-message" rows="4" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 dark:text-white focus:ring-2 focus:ring-brand-green outline-none transition"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-brand-green text-white py-4 rounded-xl font-bold hover:bg-green-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">Send Message</button>
+                    </form>
+                </div>
+                <div class="space-y-8">
+                     <div class="bg-gradient-to-br from-slate-900 to-black text-white p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-green-600 rounded-full opacity-30 blur-3xl animate-pulse"></div>
+                        <h3 class="font-bold text-2xl mb-8">Contact Info</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-5">
+                                <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center flex-shrink-0 text-brand-green"><i class="fas fa-map-marker-alt"></i></div>
+                                <div><p class="text-xs text-slate-400 font-bold uppercase mb-1">Address</p><p id="contact-address" class="font-medium">Loading...</p></div>
+                            </div>
+                            <div class="flex items-start gap-5">
+                                <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center flex-shrink-0 text-brand-green"><i class="fas fa-phone"></i></div>
+                                <div><p class="text-xs text-slate-400 font-bold uppercase mb-1">Phone</p><p id="contact-phone" class="font-medium">Loading...</p></div>
+                            </div>
+                            <div class="flex items-start gap-5">
+                                <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center flex-shrink-0 text-brand-green"><i class="fas fa-envelope"></i></div>
+                                <div><p class="text-xs text-slate-400 font-bold uppercase mb-1">Email</p><p id="contact-email" class="font-medium">Loading...</p></div>
+                            </div>
+                        </div>
+                     </div>
+                     <div class="bg-white dark:bg-slate-800 p-8 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm text-center">
+                        <h4 class="font-bold text-slate-800 dark:text-white mb-6">Follow Us</h4>
+                        <div class="flex justify-center gap-4 flex-wrap" id="contact-social-links">
+                            <p class="text-xs text-slate-400">Loading links...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- OFFICIAL PARTNERS SECTION -->
+        <section class="mt-20 border-t border-slate-200 dark:border-slate-800 pt-10 pb-4" data-aos="fade-up">
+            <h3 class="text-center text-sm font-bold text-brand-ash uppercase tracking-widest mb-8">Official Partners</h3>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 grayscale hover:grayscale-0 transition-all duration-500">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Flag_of_Sri_Lanka.svg/1200px-Flag_of_Sri_Lanka.svg.png" class="h-12 md:h-16 object-contain partner-logo" alt="SL Flag">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Emblem_of_Sri_Lanka.svg" class="h-12 md:h-16 object-contain partner-logo" alt="SL Emblem">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Western_Province_Flag_%28SRI_LANKA%29.png/330px-Western_Province_Flag_%28SRI_LANKA%29.png" class="h-12 md:h-16 object-contain partner-logo" alt="WP Flag">
+                <img src="https://dilnuka13.github.io/Dream_Makers/119.png" class="h-12 md:h-16 object-contain partner-logo" alt="119">
+                <img src="https://dilnuka13.github.io/Dream_Makers/logo.png" class="h-12 md:h-16 object-contain partner-logo" alt="Club Logo">
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="mt-10 bg-[#000000] text-slate-300 pt-20 pb-10 rounded-t-[4rem] relative overflow-hidden">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-16 border-b border-slate-800/60 pb-12">
+                     <div class="space-y-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-brand-green rounded-xl flex items-center justify-center text-white font-bold text-2xl">DM</div>
+                            <div><h2 class="text-white font-bold text-xl leading-none">Dream Makers</h2><p class="text-[10px] text-green-500 uppercase tracking-[0.2em] font-bold mt-1">Youth & Sport Club</p></div>
+                        </div>
+                        <p class="text-sm text-slate-400 leading-relaxed max-w-sm">Empowering the youth of Dikhengama through sport, discipline, and community leadership.</p>
+                        <div class="flex gap-3" id="footer-social-new"></div>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-8"><div class="w-1 h-5 bg-brand-green rounded-full"></div><h3 class="text-white font-bold uppercase tracking-wider text-sm">Navigation</h3></div>
+                        <ul class="space-y-4 text-sm font-medium">
+                            <li><button onclick="showSection('home')" class="hover:text-brand-green hover:pl-2 transition-all duration-300 flex items-center gap-2">Home</button></li>
+                            <li><button onclick="showSection('about')" class="hover:text-brand-green hover:pl-2 transition-all duration-300 flex items-center gap-2">About Us</button></li>
+                            <li><button onclick="showSection('sports')" class="hover:text-brand-green hover:pl-2 transition-all duration-300 flex items-center gap-2">Sports</button></li>
+                            <li><button onclick="showSection('events')" class="hover:text-brand-green hover:pl-2 transition-all duration-300 flex items-center gap-2">Events</button></li>
+                            <li><button onclick="showSection('contact')" class="hover:text-brand-green hover:pl-2 transition-all duration-300 flex items-center gap-2">Contact</button></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-8"><div class="w-1 h-5 bg-brand-green rounded-full"></div><h3 class="text-white font-bold uppercase tracking-wider text-sm">Contact</h3></div>
+                        <div class="space-y-4">
+                            <p class="text-sm text-white flex items-center gap-3"><i class="fas fa-map-marker-alt text-brand-green"></i> <span id="footer-address-new">Dikhengama, Horana</span></p>
+                            <p class="text-sm text-white flex items-center gap-3"><i class="fas fa-phone text-brand-green"></i> <span id="footer-phone-new">+94 00 000 0000</span></p>
+                            <p class="text-sm text-white flex items-center gap-3"><i class="fas fa-envelope text-brand-green"></i> <span id="footer-email-new">info@dmyc.lk</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500 font-medium">
+                    <p>&copy; 2025 Dream Makers Youth & Sport Club. All rights reserved.</p>
+                    <p>Designed by <a href="https://dilnuka13.github.io/my/" class="text-green-500 hover:text-white transition">Isara Dilnuka</a></p>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Join Modal (Next Level Charm UI) -->
+    <div id="join-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden z-[60] flex items-center justify-center p-4 transition-all duration-500">
+        <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-[2.5rem] w-full max-w-2xl p-0 relative shadow-2xl max-h-[90vh] overflow-y-auto border border-white/20 dark:border-slate-700/50 animate-modal-pop">
+            <!-- Header Image/Gradient -->
+            <div class="h-32 bg-gradient-to-r from-brand-green to-emerald-700 relative p-8 flex items-end">
+                <button onclick="document.getElementById('join-modal').classList.add('hidden')" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white hover:text-brand-green flex items-center justify-center transition backdrop-blur-sm"><i class="fas fa-times"></i></button>
+                <div class="relative z-10">
+                    <h3 class="text-3xl font-black text-white tracking-tight">Join the Family</h3>
+                    <p class="text-green-100 text-sm font-medium">Become a Dream Maker today!</p>
+                </div>
+                <div class="absolute right-8 bottom-0 transform translate-y-1/2">
+                    <div class="w-20 h-20 rounded-2xl bg-white dark:bg-slate-800 shadow-lg flex items-center justify-center text-4xl text-brand-green rotate-12 border-4 border-white dark:border-slate-700"><i class="fas fa-hand-holding-heart"></i></div>
+                </div>
+            </div>
+
+            <div class="p-8 pt-12">
+                <form id="membership-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="group">
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-2 pl-1 group-focus-within:text-brand-green transition">Full Name</label>
+                            <input type="text" id="m-fullname" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-green focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-semibold dark:text-white" placeholder="Enter full name" required>
+                        </div>
+                        <div class="group">
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-2 pl-1 group-focus-within:text-brand-green transition">Name with Initials</label>
+                            <input type="text" id="m-initials" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-green focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-semibold dark:text-white" placeholder="e.g. A.B. Perera" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="group">
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-2 pl-1 group-focus-within:text-brand-green transition">Date of Birth</label>
+                            <input type="date" id="m-dob" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-green focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-semibold dark:text-white text-slate-500" required>
+                        </div>
+                        <div class="group">
+                             <label class="block text-xs font-bold text-slate-400 uppercase mb-2 pl-1 group-focus-within:text-brand-green transition">NIC Number</label>
+                            <input type="text" id="m-nic" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-green focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-semibold dark:text-white" placeholder="National ID" required>
+                        </div>
+                    </div>
+
+                    <div class="group">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 pl-1 group-focus-within:text-brand-green transition">Permanent Address</label>
+                        <input type="text" id="m-address" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-green focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-semibold dark:text-white" placeholder="House No, Street, City" required>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="group">
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-2 pl-1 group-focus-within:text-brand-green transition">Phone Number</label>
+                            <input type="tel" id="m-phone" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-green focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-semibold dark:text-white" placeholder="07x xxx xxxx" required>
+                        </div>
+                        <div class="group">
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-2 pl-1 group-focus-within:text-green-500 transition">WhatsApp <i class="fab fa-whatsapp text-green-500"></i></label>
+                            <input type="tel" id="m-whatsapp" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-green-500 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-semibold dark:text-white" placeholder="07x xxx xxxx">
+                        </div>
+                    </div>
+                    
+                    <div class="group">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 pl-1 group-focus-within:text-brand-green transition">Email Address</label>
+                        <input type="email" id="m-email" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-green focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-semibold dark:text-white" placeholder="you@example.com">
+                    </div>
+
+                    <div class="group">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 pl-1 group-focus-within:text-brand-green transition">Special Skills / Bio</label>
+                        <textarea id="m-bio" rows="3" class="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-green focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-semibold dark:text-white" placeholder="Tell us about your sports or talents..."></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-brand-green to-emerald-600 text-white py-4 rounded-2xl font-bold text-lg hover:shadow-xl hover:shadow-green-500/30 transform hover:-translate-y-1 transition-all duration-300">Submit Application</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Translator -->
+    <div class="fixed bottom-4 right-4 z-50">
+        <div id="google_translate_element"></div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ once: true, offset: 60, duration: 800, easing: 'ease-out-cubic' });
+        
+        // --- SETUP ---
+        const supabaseUrl = 'https://yzlgnavevrvikaolxorg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bGduYXZldnJ2aWthb2x4b3JnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNjQyODEsImV4cCI6MjA4MTk0MDI4MX0.17BpZteoYnIYZsCs1f90VGMYnmYW6AHeXO4-1yYB7Ts';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // --- UI LOGIC ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('open');
+        }
+
+        function toggleTheme() { 
+            document.documentElement.classList.toggle('dark'); 
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); 
+        }
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+
+        function openJoinModal() {
+            const modal = document.getElementById('join-modal');
+            modal.classList.remove('hidden');
+        }
+
+        // Tab Switching Logic with Animations
+        function showSection(id) {
+            // 1. Hide current section
+            const current = document.querySelector('.page-section:not(.hidden)');
+            if (current) {
+                current.classList.add('hidden');
+                current.classList.remove('animate-fade-in-up'); // Reset animation
+            }
+
+            // 2. Show new section with animation
+            const next = document.getElementById(`section-${id}`);
+            next.classList.remove('hidden');
+            // Trigger reflow to restart animation
+            void next.offsetWidth; 
+            next.classList.add('animate-fade-in-up');
+            
+            // 3. Update Nav State
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            const navBtn = document.getElementById(`nav-${id}`);
+            if(navBtn) navBtn.classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if(id === 'gallery') fetchAlbums();
+        }
+
+        window.addEventListener('load', () => { 
+            setTimeout(() => { 
+                document.getElementById('preloader').classList.add('opacity-0', 'pointer-events-none'); 
+            }, 1500);
+            fetchHomeData();
+            fetchOfficers();
+            fetchMembers();
+            fetchSports();
+            fetchEvents(); // Fetches events AND updates calendar
+            fetchDownloads();
+            fetchContact();
+            initCalendar();
+        });
+
+        // --- CALENDAR LOGIC (2025-2030 Support) ---
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let globalEvents = []; // Store fetched events here
+
+        // Enhanced Holidays List (2025 Fixed + 2026-2030 Calculated)
+        function getHolidays(year) {
+            const holidays = [];
+
+            // 1. Always-Fixed Public Holidays (Every Year)
+            const fixed = [
+                { m: 0, d: 14, name: 'Thai Pongal', type: 'public' },
+                { m: 1, d: 4, name: 'Independence Day', type: 'public' },
+                { m: 3, d: 13, name: 'Sinhala & Tamil New Year', type: 'public' },
+                { m: 3, d: 14, name: 'Sinhala & Tamil New Year', type: 'public' },
+                { m: 4, d: 1, name: 'May Day', type: 'public' },
+                { m: 11, d: 25, name: 'Christmas Day', type: 'public' }
+            ];
+            
+            fixed.forEach(h => {
+                holidays.push({ 
+                    ...h, 
+                    date: `${year}-${String(h.m+1).padStart(2,'0')}-${String(h.d).padStart(2,'0')}` 
+                });
+            });
+
+            // 2. Year-Specific Logic
+            if (year === 2025) {
+                // HARDCODED 2025 DATES (Accurate)
+                const special2025 = [
+                    { date: '2025-01-13', name: 'Duruthu Poya', type: 'poya' },
+                    { date: '2025-02-12', name: 'Navam Poya', type: 'poya' },
+                    { date: '2025-02-26', name: 'Mahasivarathri', type: 'public' },
+                    { date: '2025-03-13', name: 'Medin Poya', type: 'poya' },
+                    { date: '2025-03-31', name: 'Id-Ul-Fitr (Ramazan)', type: 'public' },
+                    { date: '2025-04-12', name: 'Bak Poya', type: 'poya' },
+                    { date: '2025-04-18', name: 'Good Friday', type: 'public' },
+                    { date: '2025-05-12', name: 'Vesak Poya', type: 'poya' },
+                    { date: '2025-05-13', name: 'Day after Vesak', type: 'public' },
+                    { date: '2025-06-07', name: 'Id-Ul-Alha (Hajj)', type: 'public' },
+                    { date: '2025-06-10', name: 'Poson Poya', type: 'poya' },
+                    { date: '2025-07-10', name: 'Esala Poya', type: 'poya' },
+                    { date: '2025-08-08', name: 'Nikini Poya', type: 'poya' },
+                    { date: '2025-09-07', name: 'Binara Poya', type: 'poya' },
+                    { date: '2025-10-06', name: 'Vap Poya', type: 'poya' },
+                    { date: '2025-11-05', name: 'Il Poya', type: 'poya' },
+                    { date: '2025-12-04', name: 'Unduvap Poya', type: 'poya' }
+                ];
+                
+                special2025.forEach(h => {
+                    const d = new Date(h.date);
+                    holidays.push({
+                        m: d.getMonth(),
+                        d: d.getDate(),
+                        name: h.name,
+                        type: h.type,
+                        date: h.date
+                    });
+                });
+
+            } else {
+                // AUTOMATED CALCULATION FOR 2026-2030
+                // Poya Calculation based on Reference Moon (Jan 25, 2024)
+                // Mean Synodic Month: 29.53059 days
+                
+                const referenceDate = new Date('2024-01-25T23:54:00'); // Full moon time approximation
+                const msPerCycle = 29.53059 * 24 * 60 * 60 * 1000;
+                let iterDate = new Date(referenceDate);
+                
+                // Fast forward close to target year
+                while(iterDate.getFullYear() < year) {
+                    iterDate = new Date(iterDate.getTime() + msPerCycle);
+                }
+
+                // Collect Poyas for the target year
+                while(iterDate.getFullYear() === year) {
+                     holidays.push({
+                        m: iterDate.getMonth(),
+                        d: iterDate.getDate(),
+                        name: "Poya Day",
+                        type: 'poya',
+                        date: `${year}-${String(iterDate.getMonth()+1).padStart(2,'0')}-${String(iterDate.getDate()).padStart(2,'0')}`
+                    });
+                    iterDate = new Date(iterDate.getTime() + msPerCycle);
+                }
+            }
+
+            // Remove duplicates (if any fixed holiday overlaps with calculated) and sort
+            const uniqueHolidays = [];
+            const seenDates = new Set();
+            
+            // Sort by date first
+            holidays.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            holidays.forEach(h => {
+                if(!seenDates.has(h.date)) {
+                    seenDates.add(h.date);
+                    uniqueHolidays.push(h);
+                }
+            });
+
+            return uniqueHolidays;
+        }
+
+        function initCalendar() { renderCalendar(currentMonth, currentYear); }
+        
+        function changeMonth(dir) {
+            currentMonth += dir;
+            if(currentMonth < 0) { currentMonth = 11; currentYear--; }
+            if(currentMonth > 11) { currentMonth = 0; currentYear++; }
+            renderCalendar(currentMonth, currentYear);
+        }
+
+        function renderCalendar(month, year) {
+            const grid = document.getElementById('calendar-grid');
+            const monthTitle = document.getElementById('cal-month-year');
+            const holidaysList = document.getElementById('month-holidays-list');
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            monthTitle.innerText = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+            grid.innerHTML = ''; 
+            holidaysList.innerHTML = '';
+            
+            const yearHolidays = getHolidays(year);
+            const monthHolidays = yearHolidays.filter(h => h.m === month);
+            
+            // Render Empty Slots
+            for(let i=0; i<firstDay; i++) grid.innerHTML += `<div></div>`;
+            
+            // Render Days
+            for(let d=1; d<=daysInMonth; d++) {
+                let classes = "cal-day-cell text-slate-600 dark:text-slate-300 relative";
+                const dateString = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                
+                // Check Holidays
+                const holiday = monthHolidays.find(h => h.d === d);
+                if(holiday) {
+                    if(holiday.type === 'poya') classes += " is-poya"; 
+                    else if(holiday.type === 'public') classes += " is-public";
+                }
+
+                // Check Events (from Admin/DB)
+                const event = globalEvents.find(e => e.date === dateString);
+                if(event) {
+                    classes += " is-event";
+                    // Add event to list below calendar
+                    holidaysList.innerHTML += `<div class="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800 mb-2"><div class="w-6 h-6 rounded-md bg-blue-100 dark:bg-blue-800 flex items-center justify-center text-blue-500 text-[10px] shadow-sm"><i class="fas fa-calendar-star"></i></div><div><h5 class="text-[10px] font-bold text-slate-800 dark:text-white leading-tight">${event.title}</h5><p class="text-[9px] text-slate-400 font-mono leading-none">${new Date(dateString).toLocaleDateString()}</p></div></div>`;
+                }
+
+                if(d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) classes += " is-today";
+                
+                grid.innerHTML += `<div class="${classes}" title="${holiday ? holiday.name : ''} ${event ? '- ' + event.title : ''}">${d}</div>`;
+            }
+
+            // Render Holidays in List
+            if(monthHolidays.length > 0) {
+                monthHolidays.forEach(h => {
+                     const iconColor = h.type === 'poya' ? 'text-yellow-500' : 'text-red-500';
+                     const bgStyle = h.type === 'poya' ? 'bg-yellow-50 dark:bg-yellow-900/10 border-yellow-100 dark:border-yellow-800' : 'bg-red-50 dark:bg-red-900/10 border-red-100 dark:border-red-800';
+                     const icon = h.type === 'poya' ? 'fa-moon' : 'fa-flag';
+                     holidaysList.innerHTML += `<div class="flex items-center gap-2 p-2 ${bgStyle} rounded-lg border mb-2"><div class="w-6 h-6 rounded-md bg-white dark:bg-slate-800 flex items-center justify-center ${iconColor} text-[10px] shadow-sm"><i class="fas ${icon}"></i></div><div><h5 class="text-[10px] font-bold text-slate-800 dark:text-white leading-tight">${h.name}</h5><p class="text-[9px] text-slate-400 font-mono leading-none">${year}-${month+1}-${h.d}</p></div></div>`;
+                });
+            } else if (!globalEvents.some(e => new Date(e.date).getMonth() === month && new Date(e.date).getFullYear() === year)) {
+                holidaysList.innerHTML = `<p class="text-[10px] text-slate-400 text-center italic py-2">No holidays or events this month.</p>`;
+            }
+        }
+
+        // --- DATA FETCHING ---
+        async function fetchHomeData() {
+            const { data: slides } = await supabaseClient.from('slideshow_images').select('*').order('display_order');
+            const hero = document.getElementById('hero-slideshow');
+            if(slides && slides.length > 0) {
+                hero.innerHTML = '';
+                slides.forEach((s, i) => { const div = document.createElement('div'); div.className = `slide-bg ${i===0?'active':''}`; div.style.backgroundImage = `url('${s.image_url}')`; hero.appendChild(div); });
+                let idx = 0; setInterval(() => { hero.children[idx].classList.remove('active'); idx = (idx + 1) % slides.length; hero.children[idx].classList.add('active'); }, 5000);
+            }
+            const { data: qLinks } = await supabaseClient.from('quick_links').select('*').eq('is_active', true).order('display_order');
+            const qContainer = document.getElementById('quick-links-container');
+            const qSection = document.getElementById('quick-links-section');
+            if (qLinks && qLinks.length > 0) {
+                qContainer.innerHTML = '';
+                qLinks.forEach(link => { qContainer.innerHTML += `<div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-lg hover:border-green-500/30 transition-all group flex flex-col justify-between h-full"><div><h4 class="font-bold text-slate-800 dark:text-white text-lg mb-2">${link.title}</h4><p class="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2">${link.description || ''}</p></div><a href="${link.link_url}" target="_blank" class="inline-flex items-center justify-center w-full py-2.5 bg-green-50 dark:bg-green-900/20 text-brand-green dark:text-green-400 rounded-xl text-sm font-bold group-hover:bg-brand-green group-hover:text-white dark:group-hover:bg-brand-green transition-colors">View More <i class="fas fa-arrow-right ml-2 text-xs"></i></a></div>`; });
+                qSection.classList.remove('hidden');
+            } else { qSection.classList.add('hidden'); }
+            const { count: mCount } = await supabaseClient.from('members').select('*', { count: 'exact', head: true });
+            document.getElementById('stat-members').innerText = mCount || '0+';
+            const { count: sCount } = await supabaseClient.from('sports_teams').select('*', { count: 'exact', head: true });
+            document.getElementById('stat-sports').innerText = sCount || '0+';
+            const { count: eCount } = await supabaseClient.from('events').select('*', { count: 'exact', head: true });
+            document.getElementById('stat-events').innerText = eCount || '0+';
+        }
+
+        async function fetchOfficers() {
+            const { data } = await supabaseClient.from('officers').select('*').order('display_order');
+            const grid = document.getElementById('officers-grid');
+            if(data) { grid.innerHTML = ''; data.forEach(o => { 
+                const appointedDate = o.appointed_date ? new Date(o.appointed_date).toLocaleDateString() : 'Since 2023'; 
+                const email = o.email || 'N/A'; const phone = o.phone || 'N/A'; 
+                grid.innerHTML += `<div class="officer-card bg-white dark:bg-slate-800 rounded-[2.5rem] overflow-hidden shadow-lg border border-slate-100 dark:border-slate-700 relative group hover:shadow-xl transition duration-500"><div class="h-28 bg-gradient-to-r from-brand-green to-emerald-800 relative"><div class="absolute inset-0 bg-black/10"></div></div><div class="px-6 pb-8 pt-0 relative text-center"><div class="relative -mt-14 mb-5 inline-block"><img src="${o.image_url || 'https://via.placeholder.com/150'}" class="w-28 h-28 rounded-3xl object-cover border-[5px] border-white dark:border-slate-800 shadow-xl bg-white group-hover:scale-105 transition duration-500"></div><h4 class="text-xl font-bold text-slate-800 dark:text-white mb-1">${o.name}</h4><span class="inline-block px-4 py-1.5 bg-green-50 dark:bg-green-900/30 text-brand-green dark:text-green-400 text-xs font-bold uppercase rounded-full mb-6 tracking-wide">${o.position}</span><div class="bg-slate-50 dark:bg-slate-700/50 rounded-2xl p-5 text-left space-y-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-white dark:bg-slate-600 flex items-center justify-center text-brand-green shadow-sm"><i class="fas fa-calendar-check text-xs"></i></div><div><p class="text-[10px] text-slate-400 uppercase font-bold">Appointed</p><p class="text-xs font-semibold text-slate-700 dark:text-slate-200">${appointedDate}</p></div></div><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-white dark:bg-slate-600 flex items-center justify-center text-emerald-500 shadow-sm"><i class="fas fa-phone-alt text-xs"></i></div><div><p class="text-[10px] text-slate-400 uppercase font-bold">Contact</p><p class="text-xs font-semibold text-slate-700 dark:text-slate-200">${phone}</p></div></div><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-white dark:bg-slate-600 flex items-center justify-center text-teal-500 shadow-sm"><i class="fas fa-envelope text-xs"></i></div><div class="overflow-hidden"><p class="text-[10px] text-slate-400 uppercase font-bold">Email</p><p class="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate" title="${email}">${email}</p></div></div></div></div></div>`; }); }
+        }
+        function calculateAge(dateString) { if (!dateString) return 'N/A'; const today = new Date(); const birthDate = new Date(dateString); let age = today.getFullYear() - birthDate.getFullYear(); const m = today.getMonth() - birthDate.getMonth(); if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--; return age; }
+        async function fetchMembers() { const { data: members } = await supabaseClient.from('members').select('*').eq('status', 'active').order('full_name'); const container = document.getElementById('members-list'); if (members && members.length > 0) { container.innerHTML = ''; members.forEach(member => { const age = calculateAge(member.dob); const name = member.name_with_initials || member.full_name; container.innerHTML += `<tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition"><td class="px-8 py-4 font-medium text-slate-700 dark:text-slate-200"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-brand-green dark:text-green-400 text-sm font-bold">${name.charAt(0).toUpperCase()}</div>${name}</div></td><td class="px-8 py-4 text-center text-slate-600 dark:text-slate-400 font-bold">${age}</td><td class="px-8 py-4 text-right"><span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Active</span></td></tr>`; }); } else { container.innerHTML = '<tr><td colspan="3" class="px-8 py-8 text-center text-slate-400 italic">No active members yet.</td></tr>'; } }
+        async function fetchSports() { const { data } = await supabaseClient.from('sports_teams').select('*'); const list = document.getElementById('sports-list'); list.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"; if(data) { list.innerHTML = ''; data.forEach(s => { const pageLink = `${s.sport_name.replace(/\s+/g, '_').toLowerCase()}.html`; list.innerHTML += `<div class="bg-[#0f172a] dark:bg-[#020617] rounded-[2.5rem] overflow-hidden shadow-2xl hover:shadow-green-900/20 transition-all duration-300 group border border-slate-800 relative flex flex-col h-full"><div class="h-64 relative overflow-hidden"><img src="${s.team_photo_url || 'https://via.placeholder.com/400x300'}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700"><div class="absolute inset-0 bg-gradient-to-t from-[#0f172a] to-transparent opacity-90"></div><div class="absolute top-4 left-4 bg-green-500/20 backdrop-blur-md border border-green-400/30 text-green-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg">Active Team</div></div><div class="p-8 pt-2 flex flex-col flex-1"><div class="flex justify-between items-start mb-3"><h4 class="text-3xl font-black text-white tracking-tight">${s.sport_name}</h4><div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700 text-slate-400"><i class="fas fa-trophy"></i></div></div><div class="flex items-center gap-2 mb-6 text-sm text-slate-400"><i class="fas fa-user-circle text-brand-green"></i><span>Captain: <span class="text-slate-200 font-bold">${s.captain_name || 'TBA'}</span></span></div><p class="text-slate-500 text-xs leading-relaxed mb-8 line-clamp-3 flex-1">${s.description || 'A dynamic team sport designed to improve fitness, teamwork, and competitive spirit.'}</p><a href="${pageLink}" class="w-full py-4 bg-slate-800 hover:bg-brand-green text-slate-300 hover:text-white rounded-2xl text-sm font-bold transition-colors flex items-center justify-center gap-2 mt-auto group-hover:shadow-lg group-hover:shadow-green-900/20">Learn More <i class="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i></a></div></div>`; }); } }
+        async function fetchEvents() { 
+            const { data } = await supabaseClient.from('events').select('*').order('event_date', { ascending: false }); 
+            const list = document.getElementById('events-list'); 
+            
+            if(data) { 
+                // Populate Calendar Events
+                globalEvents = data.map(e => ({
+                    date: e.event_date,
+                    title: e.title
+                }));
+                // Re-render calendar to show dots
+                renderCalendar(currentMonth, currentYear);
+
+                list.innerHTML = ''; 
+                data.forEach(e => { 
+                    const date = new Date(e.event_date); 
+                    const month = date.toLocaleString('default', { month: 'short' }); 
+                    const day = date.getDate(); 
+                    list.innerHTML += `<div class="bg-white dark:bg-slate-800 rounded-[2rem] overflow-hidden border border-slate-100 dark:border-slate-700 group hover:shadow-2xl hover:border-green-500/30 transition duration-300"><div class="h-52 bg-slate-200 relative overflow-hidden"><img src="${e.cover_image_url || ''}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" onerror="this.src='https://via.placeholder.com/400x200?text=Event'"><div class="absolute top-4 right-4 bg-white/95 dark:bg-slate-900/95 rounded-xl px-4 py-3 text-center shadow-lg"><span class="block text-xs font-bold text-slate-400 uppercase tracking-widest">${month}</span><span class="block text-2xl font-black text-slate-900 dark:text-white">${day}</span></div></div><div class="p-8"><h4 class="font-bold text-xl text-slate-800 dark:text-white mb-3 line-clamp-1 group-hover:text-brand-green transition">${e.title}</h4><p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">${e.description || ''}</p></div></div>`; 
+                }); 
+            } 
+        }
+        async function fetchDownloads() { const { data } = await supabaseClient.from('downloads').select('*'); const list = document.getElementById('downloads-list'); if(data) { list.innerHTML = ''; data.forEach(d => { let icon = 'fa-file-alt text-blue-500'; if(d.file_name.toLowerCase().includes('pdf')) icon = 'fa-file-pdf text-red-500'; else if(d.file_name.toLowerCase().includes('image') || d.file_name.toLowerCase().includes('jpg')) icon = 'fa-file-image text-purple-500'; list.innerHTML += `<a href="${d.file_url}" target="_blank" class="flex items-center gap-5 p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-brand-green transition group hover:shadow-lg"><div class="w-12 h-12 bg-slate-100 dark:bg-slate-700 rounded-xl flex items-center justify-center text-xl ${icon} group-hover:scale-110 transition"><i class="fas ${icon.split(' ')[0]}"></i></div><div class="flex-1"><h5 class="font-bold text-sm text-slate-800 dark:text-white line-clamp-1">${d.file_name}</h5><span class="text-[10px] text-slate-400 uppercase tracking-wider">${d.category || 'File'}</span></div><i class="fas fa-download text-slate-300 group-hover:text-brand-green text-lg"></i></a>`; }); } }
+        async function fetchContact() { const { data } = await supabaseClient.from('site_settings').select('*').limit(1).maybeSingle(); if(data) { if(data.address) { document.getElementById('contact-address').innerText = data.address; const fAddr = document.getElementById('footer-address-new'); if(fAddr) fAddr.innerText = data.address; } if(data.contact_number) { document.getElementById('contact-phone').innerText = data.contact_number; const fPhone = document.getElementById('footer-phone-new'); if(fPhone) fPhone.innerText = data.contact_number; } if(data.email) { document.getElementById('contact-email').innerText = data.email; const fEmail = document.getElementById('footer-email-new'); if(fEmail) fEmail.innerText = data.email; } const socialLocations = [ { id: 'contact-social-links', class: 'w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-xl hover:scale-110 transition' }, { id: 'home-social-links', class: 'w-10 h-10 rounded-full bg-white/20 backdrop-blur border border-white/30 flex items-center justify-center text-white hover:bg-white hover:text-green-900 transition' }, { id: 'footer-social-new', class: 'w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center hover:bg-brand-green hover:text-white hover:border-brand-green transition text-slate-400' } ]; const links = [ { url: data.facebook_url, icon: 'facebook-f', color: 'text-blue-600' }, { url: data.youtube_url, icon: 'youtube', color: 'text-red-600' }, { url: data.instagram_url, icon: 'instagram', color: 'text-pink-600' }, { url: data.whatsapp_url, icon: 'whatsapp', color: 'text-green-500' }, { url: data.telegram_url, icon: 'telegram', color: 'text-blue-400' } ]; socialLocations.forEach(loc => { const el = document.getElementById(loc.id); if(el) { el.innerHTML = ''; links.forEach(l => { if(l.url) { const colorClass = (loc.id === 'contact-social-links') ? l.color : ''; el.innerHTML += `<a href="${l.url}" target="_blank" class="${loc.class} ${colorClass}"><i class="fab fa-${l.icon}"></i></a>`; } }); } }); } }
+        async function fetchAlbums() { const { data: albums } = await supabaseClient.from('gallery_albums').select('*').eq('is_hidden', false).order('event_date', { ascending: false }); const grid = document.getElementById('albums-grid'); if(albums && albums.length > 0) { grid.innerHTML = ''; albums.forEach(album => { grid.innerHTML += `<div onclick="openAlbum(${album.id}, '${album.title}', '${album.event_date}')" class="cursor-pointer group"><div class="aspect-square rounded-[2rem] overflow-hidden mb-4 relative shadow-md"><img src="${album.cover_image_url}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700"><div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition"></div></div><h4 class="font-bold text-lg text-slate-800 dark:text-white group-hover:text-brand-green transition">${album.title}</h4><p class="text-xs text-slate-500 font-bold">${new Date(album.event_date).toLocaleDateString()}</p></div>`; }); } else { grid.innerHTML = '<p class="col-span-full text-center text-slate-400 py-12">No albums found.</p>'; } }
+        let currentAlbumId = null;
+        async function openAlbum(id, title, date) { currentAlbumId = id; document.getElementById('gallery-albums-view').classList.add('hidden'); document.getElementById('gallery-images-view').classList.remove('hidden'); document.getElementById('current-album-title').innerText = title; document.getElementById('current-album-date').innerText = new Date(date).toDateString(); const grid = document.getElementById('album-images-grid'); grid.innerHTML = '<p class="text-center w-full">Loading...</p>'; const { data: images } = await supabaseClient.from('gallery_images').select('*').eq('album_id', id).eq('is_hidden', false); grid.innerHTML = ''; if(images && images.length > 0) { images.forEach(img => { grid.innerHTML += `<div class="break-inside-avoid mb-6 rounded-2xl overflow-hidden hover:opacity-90 transition relative group shadow-sm"><img src="${img.image_url}" class="w-full h-auto" loading="lazy">${img.caption ? `<p class="text-xs text-center p-3 bg-slate-50 dark:bg-slate-800 font-medium">${img.caption}</p>` : ''}<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-3"><a href="${img.image_url}" download target="_blank" class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-slate-800 hover:text-brand-green hover:scale-110 transition" title="Download"><i class="fas fa-download"></i></a><button onclick="copyToClipboard('${img.image_url}')" class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-slate-800 hover:text-green-600 hover:scale-110 transition" title="Copy Link"><i class="fas fa-link"></i></button></div></div>`; }); } else { grid.innerHTML = '<p class="text-slate-400">No images in this album.</p>'; } }
+        function closeAlbum() { document.getElementById('gallery-images-view').classList.add('hidden'); document.getElementById('gallery-albums-view').classList.remove('hidden'); }
+        function shareAlbum() { const url = window.location.href; navigator.clipboard.writeText(url).then(() => alert("Album link copied!")); }
+        function copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => alert("Image link copied!")); }
+        document.getElementById('contact-form').addEventListener('submit', async (e) => { e.preventDefault(); const btn = e.target.querySelector('button'); btn.innerText = 'Sending...'; const { error } = await supabaseClient.from('messages').insert([{ name: document.getElementById('msg-name').value, email: document.getElementById('msg-email').value, message: document.getElementById('msg-message').value }]); alert(error ? 'Error' : 'Message Sent!'); if(!error) e.target.reset(); btn.innerText = 'Send Message'; });
+        document.getElementById('membership-form').addEventListener('submit', async (e) => { e.preventDefault(); const btn = e.target.querySelector('button'); const originalText = btn.innerText; btn.innerText = 'Submitting...'; btn.disabled = true; const payload = { full_name: document.getElementById('m-fullname').value, name_with_initials: document.getElementById('m-initials').value, dob: document.getElementById('m-dob').value, nic: document.getElementById('m-nic').value, address: document.getElementById('m-address').value, phone: document.getElementById('m-phone').value, whatsapp: document.getElementById('m-whatsapp').value, email: document.getElementById('m-email').value, bio: document.getElementById('m-bio').value, status: 'pending' }; const { error } = await supabaseClient.from('members').insert([payload]); if(error) alert('Error: ' + error.message); else { alert('Application Sent Successfully!'); document.getElementById('join-modal').classList.add('hidden'); e.target.reset(); } btn.innerText = originalText; btn.disabled = false; });
+        function googleTranslateElementInit() { new google.translate.TranslateElement({ pageLanguage: 'en', includedLanguages: 'en,si,ta', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, autoDisplay: false }, 'google_translate_element'); }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>
