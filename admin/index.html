@@ -90,7 +90,7 @@
                     localStorage.setItem('userName', profileData.full_name);
                     localStorage.setItem('userAvatar', profileData.avatar_url || 'https://via.placeholder.com/150');
                     
-                    window.location.href = 'user_dashboard.html';
+                    window.location.href = 'admin_login_dashboard.html';
                 } else {
                     await _supabase.auth.signOut();
                     throw new Error("Account pending approval.");
@@ -108,7 +108,7 @@
             provider: 'google',
             options: {
                 // ලොග් වූ පසු යා යුතු පිටුව (User Dashboard)
-                redirectTo: window.location.origin + '/user_dashboard.html'
+                redirectTo: window.location.origin + '/admin_login_dashboard.html'
             }
         });
         
@@ -122,3 +122,4 @@
     </script>
 </body>
 </html>
+
