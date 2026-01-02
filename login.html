@@ -47,6 +47,16 @@
             </button>
             
             <p id="statusMsg" class="text-center text-sm font-bold mt-4 hidden text-red-400 bg-red-900/20 p-2 rounded-lg"></p>
+        <div class="flex items-center gap-4 my-6">
+    <div class="flex-1 h-px bg-slate-700"></div>
+    <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Or continue with</span>
+    <div class="flex-1 h-px bg-slate-700"></div>
+</div>
+
+<button type="button" onclick="signInWithGoogle()" class="w-full py-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-white transition flex items-center justify-center gap-3 group">
+    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-6 w-6 group-hover:scale-110 transition">
+    <span>Sign in with Google</span>
+</button>
         </form>
         
         <div class="mt-8 text-center pt-6 border-t border-white/5">
@@ -92,6 +102,23 @@
                 loginBtn.innerHTML = '<i class="ph-bold ph-sign-in"></i> Login';
             }
         });
+        async function signInWithGoogle() {
+    try {
+        const { data, error } = await _supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                // ලොග් වූ පසු යා යුතු පිටුව (User Dashboard)
+                redirectTo: window.location.origin + '/user_dashboard.html'
+            }
+        });
+        
+        if (error) throw error;
+        
+    } catch (error) {
+        console.error("Google Login Error:", error.message);
+        alert("Error logging in with Google: " + error.message);
+    }
+}
     </script>
 </body>
 </html>
