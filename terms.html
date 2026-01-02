@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Dream Makers Youth & Sport Club</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { 
+                        brand: {
+                            green: '#16a34a',
+                            dark: '#020617',
+                            ash: '#94a3b8',
+                            light: '#f8fafc',
+                        }
+                    },
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                } 
+            } 
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .glass-header { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(16px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .dark .glass-header { 
+            background: rgba(2, 6, 23, 0.9); 
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body class="bg-brand-light text-slate-800 dark:bg-brand-dark dark:text-slate-100 transition-colors duration-500">
+
+    <header class="fixed top-0 inset-x-0 z-50 glass-header shadow-sm h-20 flex items-center">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="relative w-10 h-10">
+                    <img src="https://dilnuka13.github.io/Dream_Makers/logo.png" alt="Logo" class="h-10 w-10 object-contain">
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg text-slate-900 dark:text-white leading-none">Dream Makers</h1>
+                    <p class="text-[10px] font-bold text-brand-green uppercase tracking-widest">Terms of Service</p>
+                </div>
+            </a>
+            <a href="index.html" class="px-5 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-sm font-bold hover:bg-brand-green hover:text-white transition">
+                <i class="fas fa-home mr-2"></i> Home
+            </a>
+        </div>
+    </header>
+
+    <main class="pt-32 pb-20 container mx-auto px-6 max-w-4xl">
+        <div class="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-slate-700">
+            <h1 class="text-3xl md:text-4xl font-black mb-2 text-slate-900 dark:text-white">Terms of Service</h1>
+            <p class="text-sm text-slate-500 mb-8 uppercase tracking-widest font-bold">Last Updated: December 28, 2025</p>
+
+            <div class="space-y-8 text-slate-600 dark:text-slate-300 leading-relaxed">
+                <section>
+                    <h2 class="text-xl font-bold text-brand-green mb-3">1. Acceptance of Terms</h2>
+                    <p>By accessing and using the Dream Makers Youth & Sport Club website and services ("the Service"), you accept and agree to be bound by the terms and provision of this agreement.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-green mb-3">2. User Conduct</h2>
+                    <p>Users are expected to use the website responsibly. Harassment, spamming, or any misuse of the club's digital resources is strictly prohibited. We reserve the right to terminate accounts that violate these guidelines.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-green mb-3">3. Membership & Accounts</h2>
+                    <p>Creating an account or registering as a member implies that you provide accurate and complete information. You are responsible for maintaining the confidentiality of your account login information.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-green mb-3">4. Disclaimer</h2>
+                    <p>The Service is provided "as is". Dream Makers Youth & Sport Club makes no warranties, expressed or implied, regarding the accuracy or reliability of any information on this site.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-brand-green mb-3">5. Changes to Terms</h2>
+                    <p>We reserve the right to modify these terms at any time. Your continued use of the site after any such changes constitutes your acceptance of the new Terms of Service.</p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-black text-slate-400 py-8 text-center text-sm">
+        <p>&copy; 2025 Dream Makers Youth & Sport Club. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

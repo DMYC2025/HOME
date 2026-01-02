@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Makers Youth & Sports Club</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { 
+                        brand: {
+                            green: '#16a34a', // Primary Green
+                            dark: '#0b1121',  // Deep Black (Matches Dashboard)
+                            ash: '#94a3b8',   // Ash Gray
+                            light: '#f8fafc', 
+                            accent: '#22c55e' 
+                        }
+                    },
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif']
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                } 
+            } 
+        }
+    </script>
+
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .glass-header { 
+            background: rgba(11, 17, 33, 0.7); 
+            backdrop-filter: blur(16px); 
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body class="bg-brand-dark text-slate-100 selection:bg-brand-green selection:text-white overflow-x-hidden">
+
+    <!-- Background Ambient Blobs (Matches Dashboard) -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-brand-green/20 rounded-full blur-[120px] animate-pulse-slow"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse-slow"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 glass-header transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-24">
+                <!-- Logo -->
+                <div class="flex items-center gap-4">
+                    <div class="relative w-12 h-12">
+                        <div class="absolute inset-0 bg-brand-green/30 rounded-full blur-md animate-pulse"></div>
+                        <img src="logo.png" alt="DMYSC Logo" class="h-12 w-12 object-contain relative z-10 drop-shadow-[0_0_10px_rgba(22,163,74,0.5)]">
+                    </div>
+                    <div>
+                        <h1 class="font-black text-lg md:text-xl leading-none tracking-tight text-white uppercase">Dream Makers</h1>
+                        <p class="text-[10px] font-bold text-brand-green uppercase tracking-[0.2em] mt-0.5">Youth & Sports Club</p>
+                    </div>
+                </div>
+
+                <!-- Theme/Action -->
+                <div class="flex items-center gap-4">
+                    <a href="login.html" class="hidden md:flex items-center gap-2 px-6 py-2 rounded-full bg-slate-800/50 border border-white/10 hover:border-brand-green hover:bg-brand-green/10 text-sm font-bold transition-all duration-300 group">
+                        <i class="ph-bold ph-sign-in text-brand-green group-hover:text-white transition"></i>
+                        <span>Member Login</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="relative min-h-screen flex items-center justify-center pt-20">
+        <!-- Hero Background Image -->
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=2070')] bg-cover bg-center opacity-30"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/90 to-brand-dark/60"></div>
+        
+        <!-- Grid Pattern Overlay -->
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+
+        <div class="container mx-auto px-4 text-center relative z-20">
+            
+            <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-brand-green/10 backdrop-blur-md border border-brand-green/30 text-brand-green font-bold text-xs mb-8 shadow-[0_0_20px_rgba(22,163,74,0.3)] animate-float" data-aos="fade-down">
+                <i class="ph-fill ph-trophy text-yellow-400 text-lg"></i> <span class="tracking-widest uppercase">Pride of Dikhengama</span>
+            </div>
+
+            <h1 class="text-5xl md:text-7xl lg:text-9xl font-black mb-6 leading-tight drop-shadow-2xl tracking-tighter" data-aos="zoom-in" data-aos-duration="1000">
+                <span class="text-white block md:inline">DREAM</span>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-green via-emerald-400 to-green-300">MAKERS</span>
+            </h1>
+
+            <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed font-light" data-aos="fade-up" data-aos-delay="200">
+                Empowering the next generation to conquer the future. 
+                <span class="text-brand-green font-medium">Sports</span>, <span class="text-blue-400 font-medium">Education</span>, and <span class="text-purple-400 font-medium">Leadership</span> under one roof.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center" data-aos="fade-up" data-aos-delay="400">
+                <!-- Modern Login Button -->
+                <a href="login.html" class="group relative px-10 py-5 bg-gradient-to-r from-brand-green to-emerald-700 text-white rounded-2xl font-black uppercase tracking-wide shadow-[0_0_30px_rgba(22,163,74,0.4)] hover:shadow-[0_0_50px_rgba(22,163,74,0.6)] transition-all duration-300 transform hover:-translate-y-1 w-full sm:w-auto flex items-center justify-center gap-3 overflow-hidden border border-brand-green/50">
+                    <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out skew-x-12"></div>
+                    <i class="ph-bold ph-sign-in text-2xl group-hover:rotate-12 transition-transform duration-300"></i> 
+                    <span class="relative z-10">Login Access</span>
+                </a>
+                
+                <!-- Modern Register Button -->
+                <a href="reg.html" class="group relative px-10 py-5 bg-slate-800/40 backdrop-blur-xl border border-white/10 text-white rounded-2xl font-black uppercase tracking-wide hover:bg-slate-800/60 hover:border-brand-green/50 hover:text-brand-green transition-all duration-300 transform hover:-translate-y-1 w-full sm:w-auto flex items-center justify-center gap-3 shadow-lg overflow-hidden">
+                    <i class="ph-bold ph-user-plus text-2xl group-hover:scale-110 transition-transform duration-300 relative z-10"></i> 
+                    <span class="relative z-10">Join Member</span>
+                </a>
+            </div>
+            
+            <!-- Quick Stats Row (Updated to load from DB) -->
+            <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto border-t border-white/5 pt-10" data-aos="fade-up" data-aos-delay="600">
+                <div class="text-center group hover:scale-105 transition duration-300">
+                    <h3 id="statMembers" class="text-3xl font-black text-white group-hover:text-brand-green transition">...</h3>
+                    <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mt-1">Members</p>
+                </div>
+                <div class="text-center group hover:scale-105 transition duration-300">
+                    <h3 id="statEvents" class="text-3xl font-black text-white group-hover:text-blue-400 transition">...</h3>
+                    <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mt-1">Events</p>
+                </div>
+                <div class="text-center group hover:scale-105 transition duration-300">
+                    <h3 id="statSports" class="text-3xl font-black text-white group-hover:text-purple-400 transition">...</h3>
+                    <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mt-1">Sports Teams</p>
+                </div>
+                <div class="text-center group hover:scale-105 transition duration-300">
+                    <h3 class="text-3xl font-black text-white group-hover:text-yellow-400 transition">100%</h3>
+                    <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mt-1">Unity</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#050914] border-t border-white/5 pt-16 pb-8 relative overflow-hidden mt-auto z-30">
+        
+        <div class="absolute top-0 left-1/4 w-64 h-64 bg-brand-green/5 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute bottom-0 right-1/4 w-64 h-64 bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <!-- Changed grid-cols-4 to grid-cols-3 since we removed one column -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
+                
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 mb-4">
+                        <img src="logo.png" class="h-10 w-auto" alt="Logo">
+                        <span class="text-xl font-black text-white tracking-tighter uppercase">DMYSC</span>
+                    </div>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Empowering youth through sports, unity, and community service. Join us to build a legacy of champions.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold uppercase tracking-wider mb-6">Contact Us</h4>
+                    <ul class="space-y-4 text-sm text-slate-400">
+                        <li class="flex items-start gap-3">
+                            <i class="ph-fill ph-map-pin text-brand-green text-xl shrink-0"></i>
+                            <span id="footerAddress">Loading...</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="ph-fill ph-phone text-brand-green text-xl shrink-0"></i>
+                            <span id="footerPhone">Loading...</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="ph-fill ph-envelope-simple text-brand-green text-xl shrink-0"></i>
+                            <span id="footerEmail">Loading...</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Admin Login Section Removed -->
+
+                <div>
+                    <h4 class="text-white font-bold uppercase tracking-wider mb-6">Developer</h4>
+                    <div class="bg-slate-800/50 rounded-xl p-4 border border-white/5 hover:border-brand-green/30 transition group">
+                        <p class="text-xs text-slate-400 mb-2">Designed & Developed by</p>
+                        <a href="https://dilnuka13.github.io/my/" target="_blank" class="flex items-center gap-3">
+                            <img src="https://dilnuka13.github.io/my/titlebar.png" class="w-10 h-10 rounded-full object-cover border border-white/10 shadow-lg" alt="Dev Logo">
+                            <div>
+                                <h5 class="text-white font-bold text-sm group-hover:text-brand-green transition">Isara Dilnuka</h5>
+                                <p class="text-[10px] text-brand-green font-mono">Full Stack Developer</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-slate-500 text-xs text-center md:text-left">
+                    &copy; <span id="year">2026</span> Dream Makers Youth & Sports Club. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ once: true, duration: 800 });
+        document.getElementById('year').innerText = new Date().getFullYear();
+
+        document.documentElement.classList.add('dark');
+
+        // Supabase Logic
+        const supabaseUrl = 'https://tnrqasiiywcvtwkwytqe.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRucnFhc2lpeXdjdnR3a3d5dHFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNDIxMTEsImV4cCI6MjA4MjkxODExMX0.rd9aKmLa687zMxg8FV5AllgnYkz7wpdXBRi3a5NyXc4';
+        const _supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Function to load statistics from DB
+        async function loadStats() {
+            try {
+                // Fetch Member Count (Assuming 'profiles' table stores user data)
+                const { count: membersCount, error: memberError } = await _supabase
+                    .from('profiles')
+                    .select('*', { count: 'exact', head: true });
+                
+                if (!memberError) {
+                    document.getElementById('statMembers').innerText = (membersCount || 0) + '+';
+                } else {
+                    document.getElementById('statMembers').innerText = '500+'; // Fallback
+                }
+
+                // Fetch Event Count
+                const { count: eventsCount, error: eventError } = await _supabase
+                    .from('events')
+                    .select('*', { count: 'exact', head: true });
+
+                if (!eventError) {
+                    document.getElementById('statEvents').innerText = (eventsCount || 0) + '+';
+                } else {
+                    document.getElementById('statEvents').innerText = '20+'; // Fallback
+                }
+
+                // Fetch Sports/Teams Count
+                const { count: sportsCount, error: sportError } = await _supabase
+                    .from('sports')
+                    .select('*', { count: 'exact', head: true });
+
+                if (!sportError) {
+                    document.getElementById('statSports').innerText = (sportsCount || 0);
+                } else {
+                    document.getElementById('statSports').innerText = '5'; // Fallback
+                }
+
+            } catch (err) {
+                console.error("Error loading stats:", err);
+            }
+        }
+
+        async function loadFooterData() {
+            try {
+                const { data } = await _supabase.from('site_settings').select('address, phone, email').eq('id', 1).single();
+                if (data) {
+                    document.getElementById('footerAddress').textContent = data.address || 'Dikhengama, Munagama';
+                    document.getElementById('footerPhone').textContent = data.phone || '+94 71 615 5666';
+                    document.getElementById('footerEmail').textContent = data.email || 'info@dmysc.lk';
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        // Initialize Data Loading
+        loadStats();
+        loadFooterData();
+    </script>
+</body>
+</html>
