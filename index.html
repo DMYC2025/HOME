@@ -102,7 +102,7 @@
         <div class="container mx-auto px-4 text-center relative z-20">
             
             <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-brand-green/10 backdrop-blur-md border border-brand-green/30 text-brand-green font-bold text-xs mb-8 shadow-[0_0_20px_rgba(22,163,74,0.3)] animate-float" data-aos="fade-down">
-                <i class="ph-fill ph-trophy text-yellow-400 text-lg"></i> <span class="tracking-widest uppercase">Pride of Dikhengama</span>
+                <i class="ph-fill ph-trophy text-yellow-400 text-lg"></i> <span class="tracking-widest uppercase">Pride of Dikhenagama</span>
             </div>
 
             <h1 class="text-5xl md:text-7xl lg:text-9xl font-black mb-6 leading-tight drop-shadow-2xl tracking-tighter" data-aos="zoom-in" data-aos-duration="1000">
@@ -273,7 +273,7 @@
             try {
                 const { data } = await _supabase.from('site_settings').select('address, phone, email').eq('id', 1).single();
                 if (data) {
-                    document.getElementById('footerAddress').textContent = data.address || 'Dikhengama, Munagama';
+                    document.getElementById('footerAddress').textContent = data.address || 'Dikhenagama, Munagama';
                     document.getElementById('footerPhone').textContent = data.phone || '+94 71 615 5666';
                     document.getElementById('footerEmail').textContent = data.email || 'info@dmysc.lk';
                 }
@@ -285,4 +285,5 @@
         loadFooterData();
     </script>
 </body>
+
 </html>
