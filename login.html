@@ -71,20 +71,19 @@
 
 <script>
     async function signInWithGoogle() {
-        try {
-            const { data, error } = await _supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    // ලොග් වුනාට පස්සේ එන්න ඕන පිටුව (ඔබේ වෙබ් එකේ URL එක මෙතනට දාන්න)
-                    // Localhost නම්: 'http://127.0.0.1:5500/user_dashboard.html' වගේ
-                    redirectTo: window.location.origin + '/user_dashboard.html'
-                }
-            });
-            if (error) throw error;
-        } catch (error) {
-            alert("Google Login Error: " + error.message);
-        }
+    try {
+        const { data, error } = await _supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                // කෙලින්ම Dashboard එකට නොයවා, පරීක්ෂා කිරීම සඳහා නැවත මෙම පිටුවටම ගෙන්වා ගනී
+                redirectTo: window.location.href 
+            }
+        });
+        if (error) throw error;
+    } catch (error) {
+        alert("Google Login Error: " + error.message);
     }
+}
 </script>
             </form>
             
@@ -145,6 +144,33 @@
                 loginBtn.innerHTML = '<i class="ph-bold ph-sign-in"></i> Login';
             }
         });
+        // Google Login හරහා හෝ Refresh කිරීමේදී Session එකක් ඇත්දැයි පරීක්ෂා කරයි
+_supabase.auth.onAuthStateChange(async (event, session) => {
+    if (session) {
+        // User Login වී ඇත. දැන් System එකේ Profile එකක් තිබේදැයි බලමු.
+        const { data: profile, error } = await _supabase
+            .from('profiles')
+            .select('id, is_approved, role')
+            .eq('id', session.user.id)
+            .single();
+
+        // Profile එකක් හමු නොවුණි නම් (එනම් Register නොවී Google වලින් ආපු කෙනෙක්)
+        if (!profile) {
+            await _supabase.auth.signOut(); // වහාම Log out කරයි
+            alert("මෙම Google ගිණුම අපගේ පද්ධතියේ ලියාපදිංචි වී නොමැත. කරුණාකර පළමුව 'Register' පිටුවෙන් ලියාපදිංචි වන්න.");
+        } 
+        else {
+            // Profile එක තිබේ. දැන් Approve වී ඇත්දැයි බලමු.
+            if (profile.is_approved === true) {
+                // සාර්ථකයි නම් අදාළ Dashboard එකට යවන්න
+                window.location.href = profile.role === 'admin' ? 'admin_login_dashboard.html' : 'user_dashboard.html';
+            } else {
+                await _supabase.auth.signOut();
+                alert("ඔබගේ ගිණුම තවම Admin විසින් අනුමත කර නොමැත. (Account Approval Pending)");
+            }
+        }
+    }
+});
     </script>
 </body>
 </html>

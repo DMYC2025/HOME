@@ -90,7 +90,34 @@
     <script src="js/ui.js"></script>
     <script>
         AOS.init();
+// --- Admin Access Check Start ---
+async function checkAccess() {
+    const { data: { session } } = await _supabase.auth.getSession();
 
+    // ලොග් වී නැත්නම් Login පිටුවට යවන්න
+    if (!session) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // ලොග් වී ඇත්නම්, Profile එකේ Role එක පරීක්ෂා කරන්න
+    const { data: profile, error } = await _supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+    if (profile) {
+        // Role එක Admin නම්, User Dashboard එකෙන් ඉවත් කර Admin Dashboard වෙත යවන්න
+        if (profile.role === 'admin') {
+            window.location.href = 'admin_login_dashboard.html';
+        }
+    }
+}
+
+// පිටුව Load වූ වහාම මෙය ක්‍රියාත්මක කරන්න
+checkAccess();
+// --- Admin Access Check End ---
         // 1. Greeting Logic
         const hour = new Date().getHours();
         const greetingSpan = document.getElementById('greeting');

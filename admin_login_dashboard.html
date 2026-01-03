@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DMYSC - Admin Dashboard</title>
@@ -31,17 +29,11 @@
 
     <style>
         body { font-family: 'Poppins', sans-serif; }
-        
-        /* Dark Mode Glass Panel */
         .glass-panel { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
-        
-        /* Sidebar Transitions */
         #sidebar { transition: transform 0.3s ease-in-out; }
         .sidebar-open { transform: translateX(0) !important; }
         .sidebar-closed { transform: translateX(-100%); }
         @media (min-width: 768px) { .sidebar-closed { transform: translateX(0); } }
-        
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
@@ -239,7 +231,9 @@
     </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="js/supabase.js"></script> <script>
+    <script src="js/supabase.js"></script> 
+    
+    <script>
         AOS.init();
         
         // Date Display
@@ -264,7 +258,7 @@
 
         let memberDataCache = [];
 
-        // Initialization
+        // Initialization: Checks if User is Admin
         async function initAdmin() {
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
@@ -272,12 +266,15 @@
 
                 const { data: profile } = await _supabase.from('profiles').select('full_name, role').eq('id', session.user.id).single();
                 
+                // Only allows access if role is 'admin'
                 if (profile?.role !== 'admin') return window.location.href = 'user_dashboard.html';
 
-                document.getElementById('adminName').textContent = profile.full_name.split(' ')[0];
+                // Display Admin Name
+                document.getElementById('adminName').textContent = profile.full_name ? profile.full_name.split(' ')[0] : 'Admin';
+                
                 loadStats();
-                loadDashboardMembers(); // Load table data
-            } catch (err) { console.error(err); }
+                loadDashboardMembers(); // Load table data for the Report Section
+            } catch (err) { console.error("Init Error:", err); }
         }
 
         // Load Stats Logic
@@ -290,10 +287,10 @@
                 document.getElementById('totalMembers').innerText = m || 0;
                 document.getElementById('pendingMembers').innerText = p || 0;
                 document.getElementById('eventCount').innerText = e || 0;
-            } catch (err) { console.error(err); }
+            } catch (err) { console.error("Stats Error:", err); }
         }
 
-        // Load Members for PDF Table
+        // Load Members for Report Table
         async function loadDashboardMembers() {
             try {
                 const { data, error } = await _supabase
@@ -308,7 +305,7 @@
                 const tbody = document.getElementById('dashboardMemberTable');
                 tbody.innerHTML = '';
 
-                if (data.length === 0) {
+                if (!data || data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">No members found.</td></tr>';
                     return;
                 }
@@ -325,8 +322,8 @@
                                 <input type="checkbox" class="member-checkbox rounded border-slate-600 bg-slate-700 text-brand-green focus:ring-offset-slate-900" value="${m.id}">
                             </td>
                             <td class="p-4 font-bold text-white flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs text-white">${m.full_name.charAt(0)}</div>
-                                ${m.full_name}
+                                <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs text-white">${m.full_name ? m.full_name.charAt(0) : '?'}</div>
+                                ${m.full_name || 'Unknown'}
                             </td>
                             <td class="p-4 font-mono text-xs">${m.phone || '-'}</td>
                             <td class="p-4 font-mono text-xs">${m.nic || '-'}</td>
@@ -346,9 +343,9 @@
             checkboxes.forEach(cb => cb.checked = mainCheck.checked);
         }
 
-        // Helper: Convert Image to Base64 for PDF
+        // Helper: Convert Image to Base64 for PDF (with Error Handling)
         function getBase64ImageFromURL(url) {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 var img = new Image();
                 img.setAttribute("crossOrigin", "anonymous");
                 img.onload = () => {
@@ -360,7 +357,8 @@
                     var dataURL = canvas.toDataURL("image/png");
                     resolve(dataURL);
                 };
-                img.onerror = error => reject(error);
+                // If logo fails, resolve null instead of crashing
+                img.onerror = () => resolve(null);
                 img.src = url;
             });
         }
@@ -377,15 +375,18 @@
             const doc = new jsPDF('landscape');
 
             try {
-                // Ensure logo.png exists in root or provide correct path
+                // Try to load logo, but continue if it fails
                 const logoData = await getBase64ImageFromURL('logo.png');
                 
                 // Header Background
                 doc.setFillColor(22, 163, 74); // Brand Green
                 doc.rect(0, 0, 297, 35, 'F');
 
-                // Logo & Text
-                doc.addImage(logoData, 'PNG', 14, 5, 25, 25);
+                // Logo & Text (Only add logo if it loaded)
+                if (logoData) {
+                    doc.addImage(logoData, 'PNG', 14, 5, 25, 25);
+                }
+
                 doc.setFontSize(22);
                 doc.setTextColor(255, 255, 255);
                 doc.setFont("helvetica", "bold");

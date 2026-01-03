@@ -161,35 +161,36 @@
 
         // 1. Executive Committee Card Generator
         function createCommCard(data) {
-            const name = data.profiles.full_name || 'Unknown';
-            const avatar = data.profiles.avatar_url || 'https://via.placeholder.com/150';
-            const role = data.role || data.position || data.title || data.role_name || 'Committee Member'; 
+    const name = data.profiles.full_name || 'Unknown';
+    const avatar = data.profiles.avatar_url || 'https://via.placeholder.com/150';
+    
+    // නිවැරදි කරන ලද පේළිය
+    const role = data.term_period || 'Committee Member'; 
 
-            return `
-            <div class="exec-card group" data-aos="fade-up">
-                <div class="card-header-bg relative overflow-hidden">
-                    <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-                </div>
-                
-                <div class="avatar-container group-hover:scale-110 transition duration-500">
-                    <img src="${avatar}" class="w-full h-full rounded-[16px] object-cover bg-slate-800">
-                </div>
-                
-                <div class="pt-14 pb-8 px-6 text-center">
-                    <h3 class="text-lg font-bold text-white mb-2 leading-tight">${name} ${getVerifyIcon()}</h3>
-                    
-                    <span class="bg-brand-green/10 text-brand-green border border-brand-green/20 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider inline-block mb-6">
-                        ${role}
-                    </span>
-                    
-                    <div class="flex justify-center gap-3 text-slate-400">
-                        <a href="https://wa.me/${data.profiles.whatsapp || ''}" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-green-600 hover:text-white transition shadow-lg"><i class="ph-fill ph-whatsapp-logo text-xl"></i></a>
-                        <a href="mailto:${data.profiles.email || ''}" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-lg"><i class="ph-fill ph-envelope-simple text-xl"></i></a>
-                    </div>
-                </div>
-            </div>`;
-        }
-
+    return `
+    <div class="exec-card group" data-aos="fade-up">
+        <div class="card-header-bg relative overflow-hidden">
+            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+        </div>
+        
+        <div class="avatar-container group-hover:scale-110 transition duration-500">
+            <img src="${avatar}" class="w-full h-full rounded-[16px] object-cover bg-slate-800">
+        </div>
+        
+        <div class="pt-14 pb-8 px-6 text-center">
+            <h3 class="text-lg font-bold text-white mb-2 leading-tight">${name} ${getVerifyIcon()}</h3>
+            
+            <span class="bg-brand-green/10 text-brand-green border border-brand-green/20 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider inline-block mb-6">
+                ${role}
+            </span>
+            
+            <div class="flex justify-center gap-3 text-slate-400">
+                <a href="https://wa.me/${data.profiles.whatsapp || ''}" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-green-600 hover:text-white transition shadow-lg"><i class="ph-fill ph-whatsapp-logo text-xl"></i></a>
+                <a href="mailto:${data.profiles.email || ''}" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-lg"><i class="ph-fill ph-envelope-simple text-xl"></i></a>
+            </div>
+        </div>
+    </div>`;
+}
         // 2. Member Table Row Generator
         function createMemRow(data) {
             const name = data.full_name;
