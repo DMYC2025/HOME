@@ -59,11 +59,11 @@
             background-position: center;
             opacity: 0;
             transition: opacity 1.5s ease-in-out;
-            filter: blur(4px); /* Blur effect */
+            filter: blur(1px); /* Blur effect */
             transform: scale(1.05); /* Slight zoom to hide blur edges */
         }
         .slide-bg.active {
-            opacity: 0.3; /* Desired opacity */
+            opacity: 1; /* වෙනස් කරන ලදි: පින්තූර වඩාත් හොඳින් පෙනෙන ලෙස 0.3 සිට 0.6 දක්වා වැඩි කරන ලදි */
         }
     </style>
 </head>
@@ -101,10 +101,10 @@
     <main class="relative min-h-screen flex items-center justify-center pt-20">
         
         <div id="hero-slideshow" class="absolute inset-0 overflow-hidden -z-10">
-            <div class="slide-bg active" style="background-image: url('https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=2070');"></div>
+            <div class="slide-bg active" style="background-image: url('https://img.freepik.com/free-vector/modern-abstract-dark-violate-pink-background_84443-2788.jpg');"></div>
         </div>
 
-        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/90 to-brand-dark/60 -z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/80 to-brand-dark/40 -z-10"></div>
         
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 -z-10"></div>
 
@@ -158,67 +158,12 @@
         </div>
     </main>
 
-    <footer class="bg-[#050914] border-t border-white/5 pt-16 pb-8 relative overflow-hidden mt-auto z-30">
-        <div class="absolute top-0 left-1/4 w-64 h-64 bg-brand-green/5 rounded-full blur-[100px] pointer-events-none"></div>
-        <div class="absolute bottom-0 right-1/4 w-64 h-64 bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
-
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
-                <div class="space-y-4">
-                    <div class="flex items-center gap-2 mb-4">
-                        <img src="logo.png" class="h-10 w-auto" alt="Logo">
-                        <span class="text-xl font-black text-white tracking-tighter uppercase">DMYSC</span>
-                    </div>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        Empowering youth through sports, unity, and community service. Join us to build a legacy of champions.
-                    </p>
-                </div>
-
-                <div>
-                    <h4 class="text-white font-bold uppercase tracking-wider mb-6">Contact Us</h4>
-                    <ul class="space-y-4 text-sm text-slate-400">
-                        <li class="flex items-start gap-3">
-                            <i class="ph-fill ph-map-pin text-brand-green text-xl shrink-0"></i>
-                            <span id="footerAddress">Loading...</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <i class="ph-fill ph-phone text-brand-green text-xl shrink-0"></i>
-                            <span id="footerPhone">Loading...</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <i class="ph-fill ph-envelope-simple text-brand-green text-xl shrink-0"></i>
-                            <span id="footerEmail">Loading...</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-white font-bold uppercase tracking-wider mb-6">Developer</h4>
-                    <div class="bg-slate-800/50 rounded-xl p-4 border border-white/5 hover:border-brand-green/30 transition group">
-                        <p class="text-xs text-slate-400 mb-2">Designed & Developed by</p>
-                        <a href="https://dilnuka13.github.io/my/" target="_blank" class="flex items-center gap-3">
-                            <img src="https://dilnuka13.github.io/my/titlebar.png" class="w-10 h-10 rounded-full object-cover border border-white/10 shadow-lg" alt="Dev Logo">
-                            <div>
-                                <h5 class="text-white font-bold text-sm group-hover:text-brand-green transition">Isara Dilnuka</h5>
-                                <p class="text-[10px] text-brand-green font-mono">Full Stack Developer</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-slate-500 text-xs text-center md:text-left">
-                    &copy; <span id="year">2026</span> Dream Makers Youth & Sports Club. All rights reserved.
-                </p>
-            </div>
-        </div>
-    </footer>
+    <div id="global-footer-placeholder"></div>
+    <script src="js/footer-loader.js"></script>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({ once: true, duration: 800 });
-        document.getElementById('year').innerText = new Date().getFullYear();
         document.documentElement.classList.add('dark');
 
         const supabaseUrl = 'https://tnrqasiiywcvtwkwytqe.supabase.co';
@@ -256,7 +201,7 @@
                             
                             // Add active to next
                             slideElements[currentIndex].classList.add('active');
-                        }, 4000); // 4 Seconds
+                        }, 5000); // 5 Seconds
                     }
                 }
             } catch (err) {
@@ -264,7 +209,7 @@
             }
         }
         
-        // --- Stats & Footer ---
+        // --- Stats & Footer Data ---
         async function loadStats() {
             try {
                 const { count: membersCount } = await _supabase.from('profiles').select('*', { count: 'exact', head: true });
@@ -278,13 +223,28 @@
             } catch (err) { console.error(err); }
         }
 
+        // Footer එක load වූ පසු දත්ත පිරවීමට උත්සාහ කරයි
         async function loadFooterData() {
             try {
                 const { data } = await _supabase.from('site_settings').select('address, phone, email').eq('id', 1).single();
                 if (data) {
-                    document.getElementById('footerAddress').textContent = data.address || 'Dikhenagama, Munagama';
-                    document.getElementById('footerPhone').textContent = data.phone || '+94 71 615 5666';
-                    document.getElementById('footerEmail').textContent = data.email || 'info@dmysc.lk';
+                    // Footer එක load වීමට සුළු වේලාවක් ගත විය හැකි නිසා අපි element එක තිබේදැයි බලමු
+                    const checkFooter = setInterval(() => {
+                        const addrEl = document.getElementById('footerAddress');
+                        if (addrEl) {
+                            clearInterval(checkFooter); // Element එක හමු වූ විට නවතන්න
+                            addrEl.textContent = data.address || 'Dikhenagama, Munagama';
+                            document.getElementById('footerPhone').textContent = data.phone || '+94 71 615 5666';
+                            document.getElementById('footerEmail').textContent = data.email || 'info@dmysc.lk';
+                            
+                            // වර්ෂය යාවත්කාලීන කිරීම (Footer එකේ තිබේ නම්)
+                            const yearEl = document.getElementById('year');
+                            if(yearEl) yearEl.innerText = new Date().getFullYear();
+                        }
+                    }, 100); // සෑම මිලි තත්පර 100කට වරක් පරීක්ෂා කරයි
+                    
+                    // තත්පර 5කින් පසුත් හමු නොවුණොත් නවතන්න (Safety timeout)
+                    setTimeout(() => clearInterval(checkFooter), 5000);
                 }
             } catch (err) { console.error(err); }
         }
