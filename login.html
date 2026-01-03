@@ -15,11 +15,9 @@
 </head>
 <body class="bg-slate-100 dark:bg-brand-dark min-h-screen flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-500 font-poppins">
 
-    <!-- Background Decoration -->
     <div class="absolute top-0 left-0 w-96 h-96 bg-brand-green/20 rounded-full blur-[100px] animate-pulse"></div>
     <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] animate-pulse"></div>
 
-    <!-- Theme Toggle -->
     <button onclick="toggleTheme()" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-lg flex items-center justify-center text-slate-600 dark:text-white z-50">
         <i class="ph-bold ph-moon dark:hidden"></i><i class="ph-bold ph-sun hidden dark:inline"></i>
     </button>
@@ -65,26 +63,9 @@
                 </div>
 
                 <button onclick="signInWithGoogle()" type="button" class="w-full py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center justify-center gap-2">
-    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5" alt="Google">
-    <span>Login with Google</span>
-</button>
-
-<script>
-    async function signInWithGoogle() {
-    try {
-        const { data, error } = await _supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                // කෙලින්ම Dashboard එකට නොයවා, පරීක්ෂා කිරීම සඳහා නැවත මෙම පිටුවටම ගෙන්වා ගනී
-                redirectTo: window.location.href 
-            }
-        });
-        if (error) throw error;
-    } catch (error) {
-        alert("Google Login Error: " + error.message);
-    }
-}
-</script>
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5" alt="Google">
+                    <span>Login with Google</span>
+                </button>
             </form>
             
             <div class="mt-8 text-center">
@@ -109,23 +90,41 @@
         const loginBtn = document.getElementById('loginBtn');
         const statusMsg = document.getElementById('statusMsg');
 
+        // Manual Login සිදුවන විට onAuthStateChange එක බාධා කිරීම වැළැක්වීමට
+        let isManualLogin = false;
+
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            isManualLogin = true; // Manual login පටන් ගත්තා කියල සලකුණු කරයි
+
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Checking...';
             statusMsg.classList.add('hidden');
+            statusMsg.textContent = "";
+            statusMsg.className = ""; // Reset classes
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
             try {
+                // 1. Login වීමට උත්සාහ කරයි
                 const { data: authData, error: authError } = await _supabase.auth.signInWithPassword({ email, password });
                 if (authError) throw authError;
 
-                const { data: profileData, error: profileError } = await _supabase.from('profiles').select('is_approved, role').eq('id', authData.user.id).single();
-                if (profileError) throw new Error("Error fetching user data.");
+                // 2. Profile දත්ත ලබා ගනී
+                const { data: profileData, error: profileError } = await _supabase
+                    .from('profiles')
+                    .select('is_approved, role')
+                    .eq('id', authData.user.id)
+                    .single();
 
-                if (profileData.is_approved === true) {
+                if (profileError) {
+                    console.error("Profile Error:", profileError); // Debugging සඳහා
+                    throw new Error("User profile not found. Please contact admin.");
+                }
+
+                // 3. ගිණුම අනුමත වී ඇත්දැයි බලයි
+                if (profileData && profileData.is_approved === true) {
                     statusMsg.textContent = "Success! Logging in...";
                     statusMsg.className = "text-center text-sm font-bold mt-2 text-green-500 block";
                     setTimeout(() => {
@@ -134,43 +133,58 @@
                 } else {
                     await _supabase.auth.signOut();
                     alert("Your account has not been approved by Admin yet.");
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="ph-bold ph-sign-in"></i> Login';
+                    throw new Error("Account Approval Pending");
                 }
             } catch (error) {
+                console.error("Login Error:", error);
+                // වැරදි විස්තර හෝ වෙනත් දෝෂයක් නම් Button එක නැවත සකසයි
                 statusMsg.textContent = "Error: " + (error.message === "Invalid login credentials" ? "Invalid Email or Password." : error.message);
                 statusMsg.className = "text-center text-sm font-bold mt-2 text-red-500 block";
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<i class="ph-bold ph-sign-in"></i> Login';
+                isManualLogin = false; // දෝෂයක් ආවොත් නැවත සාමාන්‍ය තත්වයට
             }
         });
-        // Google Login හරහා හෝ Refresh කිරීමේදී Session එකක් ඇත්දැයි පරීක්ෂා කරයි
-_supabase.auth.onAuthStateChange(async (event, session) => {
-    if (session) {
-        // User Login වී ඇත. දැන් System එකේ Profile එකක් තිබේදැයි බලමු.
-        const { data: profile, error } = await _supabase
-            .from('profiles')
-            .select('id, is_approved, role')
-            .eq('id', session.user.id)
-            .single();
 
-        // Profile එකක් හමු නොවුණි නම් (එනම් Register නොවී Google වලින් ආපු කෙනෙක්)
-        if (!profile) {
-            await _supabase.auth.signOut(); // වහාම Log out කරයි
-            alert("මෙම Google ගිණුම අපගේ පද්ධතියේ ලියාපදිංචි වී නොමැත. කරුණාකර පළමුව 'Register' පිටුවෙන් ලියාපදිංචි වන්න.");
-        } 
-        else {
-            // Profile එක තිබේ. දැන් Approve වී ඇත්දැයි බලමු.
-            if (profile.is_approved === true) {
-                // සාර්ථකයි නම් අදාළ Dashboard එකට යවන්න
-                window.location.href = profile.role === 'admin' ? 'admin_login_dashboard.html' : 'user_dashboard.html';
-            } else {
-                await _supabase.auth.signOut();
-                alert("ඔබගේ ගිණුම තවම Admin විසින් අනුමත කර නොමැත. (Account Approval Pending)");
+        async function signInWithGoogle() {
+            try {
+                const { data, error } = await _supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.href 
+                    }
+                });
+                if (error) throw error;
+            } catch (error) {
+                alert("Google Login Error: " + error.message);
             }
         }
-    }
-});
+
+        // Google Login සහ Page Refresh සඳහා පමණක් මෙය ක්‍රියාත්මක වේ
+        _supabase.auth.onAuthStateChange(async (event, session) => {
+            // Manual login එකක් සිදුවෙමින් පවතී නම් මෙය ක්‍රියාත්මක නොවේ (බාධා නොකරයි)
+            if (isManualLogin) return;
+
+            if (session) {
+                const { data: profile, error } = await _supabase
+                    .from('profiles')
+                    .select('id, is_approved, role')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (!profile) {
+                    await _supabase.auth.signOut();
+                    alert("මෙම Google ගිණුම අපගේ පද්ධතියේ ලියාපදිංචි වී නොමැත. කරුණාකර පළමුව 'Register' පිටුවෙන් ලියාපදිංචි වන්න.");
+                } else {
+                    if (profile.is_approved === true) {
+                        window.location.href = profile.role === 'admin' ? 'admin_login_dashboard.html' : 'user_dashboard.html';
+                    } else {
+                        await _supabase.auth.signOut();
+                        alert("ඔබගේ ගිණුම තවම Admin විසින් අනුමත කර නොමැත.");
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
