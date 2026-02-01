@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Profile - DMYSC</title>
+    <link rel="icon" type="image/png" href="../assets/logo_1.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { 
+            darkMode: 'class', 
+            theme: { 
+                extend: { 
+                    colors: { 
+                        background: '#121212',
+                        surface: '#1E1E1E',
+                        'surface-container': '#252529',
+                        primary: '#a6f7bd',
+                        'on-primary': '#003915',
+                        secondary: '#c2c9bd',
+                        tertiary: '#a0cfd0',
+                        error: '#ffb4ab',
+                    }, 
+                    fontFamily: { 
+                        sans: ['Roboto', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif']
+                    }, 
+                    borderRadius: {
+                        '4xl': '28px',
+                    },
+                    animation: { 
+                        'fade-in': 'fadeIn 0.4s cubic-bezier(0.2, 0.0, 0, 1.0)',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                    }
+                } 
+            } 
+        }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        body { 
+            background-color: #121212;
+            color: #E3E3E3;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-rounded { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+        
+        .m3-card {
+            background-color: #1E1E1E;
+            border-radius: 24px;
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .m3-card:hover {
+            background-color: #28282D;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        .m3-navbar { background-color: #252529; border-radius: 999px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        /* M3 Input Styles */
+        .m3-input {
+            background-color: #252529;
+            border: 1px solid #353539;
+            color: #E3E3E3;
+            border-radius: 12px;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .m3-input:focus {
+            border-color: #a6f7bd;
+            outline: none;
+            background-color: #1E1E1E;
+        }
+        .m3-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            border-color: transparent;
+            background-color: #1E1E1E;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background-color: #353539;
+            color: #C4C7C5;
+            transition: all 0.2s;
+        }
+        .action-btn:hover { background-color: #a6f7bd; color: #003915; }
+        .action-btn.delete:hover { background-color: #ffb4ab; color: #690005; }
+    </style>
+</head>
+<body class="min-h-screen pb-24 md:pb-0 font-sans">
+
+    <nav class="sticky top-4 z-40 w-full px-4 no-print">
+        <div class="max-w-7xl mx-auto m3-navbar px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3 pl-2 group">
+                <button class="w-8 h-8 rounded-full bg-[#353539] flex items-center justify-center group-hover:bg-primary group-hover:text-[#003915] transition">
+                    <span class="material-symbols-rounded text-[20px]">arrow_back</span>
+                </button>
+                <div class="flex flex-col">
+                    <span class="text-sm font-display font-medium text-[#E3E3E3]">My Profile</span>
+                    <span class="text-[10px] text-secondary tracking-wider font-bold">Manage Account</span>
+                </div>
+            </a>
+            
+            <div class="flex items-center gap-3">
+                <a href="notifycation.html" class="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#3b3b3f] transition text-[#C4C7C5]">
+                    <span class="material-symbols-rounded">notifications</span>
+                </a>
+                <div class="w-10 h-10 rounded-full p-1 bg-[#353539] hidden md:block border border-primary">
+                    <img id="navAvatar" src="https://img.freepik.com/premium-vector/green-user-account-profile-flat-icon-apps-websites_1254296-1186.jpg" class="w-full h-full rounded-full object-cover">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-1 space-y-6">
+                
+                <div class="m3-card bg-[#1e2f23] p-0 overflow-hidden border border-[#2b3e32] relative group shadow-xl" data-aos="fade-up">
+                    <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 mix-blend-overlay"></div>
+                    
+                    <div class="p-4 flex flex-col items-center relative z-10 pt-8 pb-8">
+                        <div class="w-full flex justify-between items-start mb-4 px-2">
+                            <span class="text-[10px] font-display font-bold text-[#e4e2e2] tracking-widest opacity-50">DMYSC PASS</span>
+                            <span class="bg-[#a6f7bd] text-[#003915] text-[9px] font-bold px-2 py-0.5 rounded-md">MEMBER</span>
+                        </div>
+
+                        <div class="w-28 h-28 p-1 rounded-full border-2 border-[#a6f7bd] mb-3 shadow-lg shadow-primary/20 relative">
+                            <img id="cardAvatar" src="https://via.placeholder.com/150" class="w-full h-full rounded-full object-cover bg-[#2b3e32]">
+                            <div id="googleBadge" class="hidden absolute bottom-0 right-0 bg-white rounded-full p-1 shadow-md w-7 h-7 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-4 h-4"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+                            </div>
+                        </div>
+                        
+                        <h2 id="cardName" class="text-xl font-display font-medium text-white text-center leading-tight flex items-center gap-1">...</h2>
+                        <p class="text-[10px] text-[#a6f7bd] font-mono mt-1">ID: <span id="cardId">...</span></p>
+                    </div>
+
+                    <div id="photoActions" class="bg-[#121212]/90 backdrop-blur p-4 border-t border-[#353539] flex justify-center gap-4 hidden">
+                        <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
+                        <input type="file" id="galleryInput" accept="image/*" class="hidden">
+                        
+                        <button onclick="document.getElementById('cameraInput').click()" class="action-btn" title="Take Photo">
+                            <span class="material-symbols-rounded">photo_camera</span>
+                        </button>
+                        <button onclick="document.getElementById('galleryInput').click()" class="action-btn" title="Upload from Gallery">
+                            <span class="material-symbols-rounded">image</span>
+                        </button>
+                        <button onclick="toggleLinkInput()" class="action-btn" title="Link URL">
+                            <span class="material-symbols-rounded">link</span>
+                        </button>
+                        <button onclick="removeAvatar()" class="action-btn delete" title="Remove Photo">
+                            <span class="material-symbols-rounded">delete</span>
+                        </button>
+                    </div>
+
+                    <div id="linkInputArea" class="hidden bg-[#121212] p-4 border-t border-[#353539] flex gap-2">
+                        <input type="text" id="avatarLink" placeholder="Paste image URL..." class="flex-1 bg-[#252529] border border-[#353539] rounded-full px-4 py-2 text-xs text-[#E3E3E3] outline-none focus:border-primary">
+                        <button onclick="saveAvatarLink()" class="w-8 h-8 rounded-full bg-primary text-[#003915] flex items-center justify-center">
+                            <span class="material-symbols-rounded text-sm">check</span>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-center text-xs text-[#C4C7C5] hidden" id="photoHelpText">Enable editing to manage photo.</p>
+
+            </div>
+
+            <div class="lg:col-span-2 space-y-4">
+                
+                <div class="m3-card p-6 md:p-8 bg-[#1E1E1E] relative" data-aos="fade-left">
+                    
+                    <div class="flex flex-row items-center justify-between mb-6 pb-4 border-b border-[#353539]">
+                        <div>
+                            <h2 class="text-xl font-display font-medium text-[#E3E3E3]">Profile Details</h2>
+                            <p class="text-xs text-[#C4C7C5] mt-1">Manage your personal information.</p>
+                        </div>
+                        <button id="editModeBtn" onclick="toggleEditMode()" class="group bg-[#252529] hover:bg-[#353539] border border-[#353539] px-4 py-2 rounded-full flex items-center gap-2 transition-all duration-300">
+                            <span class="text-xs font-bold text-[#C4C7C5] uppercase tracking-wider group-hover:text-white">Edit</span>
+                            <span class="material-symbols-rounded text-[18px] text-[#C4C7C5] group-hover:text-primary">edit</span>
+                        </button>
+                    </div>
+
+                    <form id="profileForm" class="space-y-8">
+                        
+                        <div class="space-y-4">
+                            <h3 class="text-xs font-bold text-primary uppercase tracking-widest flex items-center gap-2">
+                                <span class="material-symbols-rounded text-base">badge</span> Identity
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label class="text-[10px] font-bold text-[#8e918f] uppercase ml-1 mb-1 block">Display Name</label>
+                                    <input type="text" id="displayName" disabled class="m3-input p-3 text-sm font-medium" placeholder="Name on ID Card">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="text-[10px] font-bold text-[#8e918f] uppercase ml-1 mb-1 block">Full Name</label>
+                                    <input type="text" id="fullName" disabled class="m3-input p-3 text-sm font-medium">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-[#8e918f] uppercase ml-1 mb-1 block">NIC Number</label>
+                                    <input type="text" id="nic" disabled class="m3-input p-3 text-sm font-medium font-mono">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-[#8e918f] uppercase ml-1 mb-1 block">Date of Birth</label>
+                                    <input type="date" id="dob" disabled class="m3-input p-3 text-sm font-medium text-[#C4C7C5]">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 pt-4 border-t border-[#353539]">
+                            <h3 class="text-xs font-bold text-secondary uppercase tracking-widest flex items-center gap-2">
+                                <span class="material-symbols-rounded text-base">contact_phone</span> Contact Info
+                            </h3>
+                            
+                            <div id="emailContainer" class="bg-[#252529]/50 rounded-xl p-4 border border-[#353539] flex items-center justify-between">
+                                <div>
+                                    <label class="text-[10px] font-bold text-[#C4C7C5] uppercase tracking-widest mb-1 block">Primary Email</label>
+                                    <div id="email" class="text-[#E3E3E3] font-mono text-sm break-all flex items-center gap-2">
+                                        Loading...
+                                    </div>
+                                </div>
+                                <span class="material-symbols-rounded text-[#353539]">lock</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] font-bold text-[#8e918f] uppercase ml-1 mb-1 block">WhatsApp</label>
+                                    <input type="text" id="whatsapp" disabled class="m3-input p-3 text-sm font-medium font-mono" placeholder="07x xxxxxxx">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-[#8e918f] uppercase ml-1 mb-1 block">Phone Number</label>
+                                    <input type="text" id="phone" disabled class="m3-input p-3 text-sm font-medium font-mono" placeholder="07x xxxxxxx">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="text-[10px] font-bold text-[#8e918f] uppercase ml-1 mb-1 block">Residential Address</label>
+                                    <textarea id="address" rows="2" disabled class="m3-input p-3 text-sm font-medium" placeholder="No, Street, City..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 pt-4 border-t border-[#353539]">
+                            <h3 class="text-xs font-bold text-tertiary uppercase tracking-widest flex items-center gap-2">
+                                <span class="material-symbols-rounded text-base">school</span> Professional & Skills
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label class="text-[10px] font-bold text-[#8e918f] uppercase ml-1 mb-1 block">Job / Profession</label>
+                                    <input type="text" id="job" disabled class="m3-input p-3 text-sm font-medium" placeholder="Student / Engineer / etc.">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-[#8e918f] uppercase ml-1 mb-1 block">Sports Skills</label>
+                                    <textarea id="sports" rows="2" disabled class="m3-input p-3 text-sm font-medium" placeholder="Cricket, Volleyball, etc."></textarea>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-[#8e918f] uppercase ml-1 mb-1 block">Aesthetic Skills</label>
+                                    <textarea id="aesthetic" rows="2" disabled class="m3-input p-3 text-sm font-medium" placeholder="Dancing, Singing, etc."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="saveBtnContainer" class="text-right pt-6 border-t border-[#353539] hidden">
+                            <button type="submit" id="saveBtn" class="bg-primary hover:bg-[#b1fcc5] text-[#003915] font-medium py-3 px-8 rounded-full shadow-lg transition flex items-center justify-center gap-2 ml-auto text-sm">
+                                <span class="material-symbols-rounded text-[20px]">save</span> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="global-footer-placeholder" class="pb-20 md:pb-0"></div>
+
+    <div class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-[#1E1E1E] border-t border-[#252529] pb-safe">
+        <div class="flex justify-around items-center h-16">
+            <a href="index.html" class="flex flex-col items-center gap-1 w-full text-[#C4C7C5]">
+                <span class="material-symbols-rounded">home</span>
+                <span class="text-[10px] font-medium">Home</span>
+            </a>
+            <button class="flex flex-col items-center gap-1 w-full text-primary">
+                <div class="w-12 h-7 rounded-full bg-[#003915] flex items-center justify-center">
+                    <span class="material-symbols-rounded text-[20px]">person</span>
+                </div>
+                <span class="text-[10px] font-medium">Profile</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 transition-opacity" onclick="closeConfirmModal()"></div>
+        <div class="bg-[#252529] rounded-[28px] max-w-sm w-full p-6 relative z-10 shadow-2xl border border-[#353539]">
+            <div class="flex items-center gap-3 mb-4 border-b border-[#353539] pb-3">
+                <div class="w-10 h-10 rounded-full bg-[#1b2e23] text-primary flex items-center justify-center">
+                    <span class="material-symbols-rounded text-xl">fact_check</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-display font-medium text-[#E3E3E3]">Review Changes</h3>
+                    <p class="text-[10px] text-[#C4C7C5]">Please review your updates before saving.</p>
+                </div>
+            </div>
+            
+            <div class="space-y-3 mb-6 bg-[#1E1E1E] p-4 rounded-xl border border-[#353539] max-h-60 overflow-y-auto custom-scrollbar" id="changesSummary">
+                </div>
+
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeConfirmModal()" class="px-5 py-2.5 rounded-full text-error font-bold text-xs hover:bg-[#3c2525] border border-transparent hover:border-error/30 transition">Discard Changes</button>
+                <button id="confirmSaveBtn" class="px-5 py-2.5 rounded-full bg-primary text-[#003915] font-bold text-xs hover:bg-[#b1fcc5] transition flex items-center gap-2">
+                    <span class="material-symbols-rounded text-[16px]">check_circle</span> Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/ui.js"></script>
+    
+    <script>
+        AOS.init();
+        
+        let userId = null;
+        let originalData = {};
+        let pendingUpdates = {};
+        const DEFAULT_AVATAR = "https://img.freepik.com/premium-vector/green-user-account-profile-flat-icon-apps-websites_1254296-1186.jpg";
+
+        // UI Elements
+        const inputs = document.querySelectorAll('#profileForm input:not([type="hidden"]), #profileForm textarea');
+        const saveBtnContainer = document.getElementById('saveBtnContainer');
+        const photoActions = document.getElementById('photoActions');
+        const photoHelpText = document.getElementById('photoHelpText');
+        const editModeBtn = document.getElementById('editModeBtn');
+
+        // Field Label Mapping for UI
+        const fieldLabels = {
+            display_name: "Display Name",
+            full_name: "Full Name",
+            nic: "NIC Number",
+            dob: "Date of Birth",
+            address: "Address",
+            whatsapp: "WhatsApp",
+            phone: "Phone",
+            job: "Job/Profession",
+            sports_skills: "Sports",
+            aesthetic_skills: "Skills"
+        };
+
+        async function init() {
+            if (typeof _supabase === 'undefined') return;
+
+            // Check Session
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (!session) return window.location.href = '../login.html';
+            userId = session.user.id;
+
+            // Fetch Profile
+            const { data: profile } = await _supabase.from('profiles').select('*').eq('id', userId).single();
+            
+            if (profile) {
+                originalData = { ...profile };
+
+                // 1. Populate Avatar & Info
+                const avatar = (profile.avatar_url && profile.avatar_url.trim() !== "") ? profile.avatar_url : DEFAULT_AVATAR;
+                document.getElementById('cardAvatar').src = avatar;
+                if(document.getElementById('navAvatar')) document.getElementById('navAvatar').src = avatar;
+                
+                const nameToShow = profile.display_name || profile.full_name;
+                document.getElementById('cardName').innerText = nameToShow;
+                document.getElementById('cardId').innerText = profile.member_id || 'PENDING';
+                
+                // 2. Google Binding Logic
+                const email = profile.email || 'No Email Linked';
+                const isGoogle = email.includes('@gmail.com') || (session.user.app_metadata.provider === 'google');
+                
+                if (isGoogle) {
+                    document.getElementById('email').innerHTML = `
+                        <div class="flex items-center gap-2 bg-white/10 px-2 py-1 rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-4 h-4"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+                            <span class="text-xs font-bold text-white">Linked with Google</span>
+                        </div>
+                        <span class="text-[#C4C7C5] ml-2">${email}</span>
+                    `;
+                    document.getElementById('emailContainer').classList.replace('border-[#353539]', 'border-blue-500/30');
+                    document.getElementById('googleBadge').classList.remove('hidden');
+                } else {
+                    document.getElementById('email').innerHTML = `<span class="material-symbols-rounded text-sm text-[#C4C7C5]">mail</span> <span>${email}</span>`;
+                }
+
+                // 3. Populate Inputs
+                document.getElementById('displayName').value = originalData.display_name || '';
+                document.getElementById('fullName').value = originalData.full_name || '';
+                document.getElementById('nic').value = originalData.nic || '';
+                document.getElementById('dob').value = originalData.dob || '';
+                document.getElementById('whatsapp').value = originalData.whatsapp || '';
+                document.getElementById('phone').value = originalData.phone || '';
+                document.getElementById('address').value = originalData.address || '';
+                document.getElementById('job').value = originalData.job || '';
+                document.getElementById('sports').value = originalData.sports_skills || '';
+                document.getElementById('aesthetic').value = originalData.aesthetic_skills || '';
+            }
+        }
+
+        function toggleEditMode() {
+            const isCurrentlyDisabled = document.getElementById('displayName').disabled;
+            
+            if (isCurrentlyDisabled) {
+                // UNLOCK
+                inputs.forEach(input => {
+                    input.disabled = false;
+                    const label = input.previousElementSibling;
+                    if(label) label.classList.replace('text-[#8e918f]', 'text-primary');
+                });
+
+                // Show Actions
+                photoActions.classList.remove('hidden');
+                photoHelpText.classList.add('hidden');
+                saveBtnContainer.classList.remove('hidden');
+
+                // Button Style
+                editModeBtn.classList.replace('border-[#353539]', 'border-primary');
+                editModeBtn.innerHTML = `
+                    <span class="text-xs font-bold text-primary uppercase tracking-wider">Editing</span>
+                    <span class="material-symbols-rounded text-[18px] text-primary">lock_open</span>
+                `;
+
+            } else {
+                // LOCK
+                lockForm();
+                
+                // Button Style
+                editModeBtn.classList.replace('border-primary', 'border-[#353539]');
+                editModeBtn.innerHTML = `
+                    <span class="text-xs font-bold text-[#C4C7C5] uppercase tracking-wider group-hover:text-white">Edit</span>
+                    <span class="material-symbols-rounded text-[18px] text-[#C4C7C5] group-hover:text-primary">edit</span>
+                `;
+            }
+        }
+
+        function lockForm() {
+            inputs.forEach(input => {
+                input.disabled = true;
+                const label = input.previousElementSibling;
+                if(label) label.classList.replace('text-primary', 'text-[#8e918f]');
+            });
+            photoActions.classList.add('hidden');
+            photoHelpText.classList.remove('hidden');
+            document.getElementById('linkInputArea').classList.add('hidden');
+            saveBtnContainer.classList.add('hidden');
+        }
+
+        // --- PHOTO LOGIC ---
+        function handleFileUpload(file) {
+            if (!file) return;
+            const fileName = `${userId}-${Date.now()}`;
+            
+            // Simple visual feedback
+            const btn = document.querySelector('.action-btn'); 
+            
+            _supabase.storage.from('avatars').upload(fileName, file)
+                .then(({ error }) => {
+                    if (error) throw error;
+                    const { data: { publicUrl } } = _supabase.storage.from('avatars').getPublicUrl(fileName);
+                    return updateAvatarUrl(publicUrl);
+                })
+                .catch(err => {
+                    alert('Upload failed: ' + err.message);
+                });
+        }
+
+        // 1. Camera & 2. Gallery Handlers
+        // Note: The 'capture="environment"' attribute on the camera input handles the native camera opening on mobile.
+        document.getElementById('cameraInput').addEventListener('change', (e) => handleFileUpload(e.target.files[0]));
+        document.getElementById('galleryInput').addEventListener('change', (e) => handleFileUpload(e.target.files[0]));
+
+        // 3. Link Logic
+        function toggleLinkInput() {
+            document.getElementById('linkInputArea').classList.toggle('hidden');
+        }
+
+        async function saveAvatarLink() {
+            const url = document.getElementById('avatarLink').value;
+            if(url) {
+                await updateAvatarUrl(url);
+                document.getElementById('linkInputArea').classList.add('hidden');
+            }
+        }
+
+        // 4. Remove Logic
+        async function removeAvatar() {
+            if(confirm("Remove profile photo and reset to default?")) {
+                await updateAvatarUrl("");
+            }
+        }
+
+        async function updateAvatarUrl(url) {
+            const finalUrl = url || ""; 
+            const { error } = await _supabase.from('profiles').update({ avatar_url: finalUrl }).eq('id', userId);
+            
+            if (!error) {
+                const displayUrl = finalUrl || DEFAULT_AVATAR;
+                document.getElementById('cardAvatar').src = displayUrl;
+                if(document.getElementById('navAvatar')) document.getElementById('navAvatar').src = displayUrl;
+                // Optional: Update original data to reflect image change immediately
+                if(originalData) originalData.avatar_url = finalUrl;
+            } else {
+                alert('Error updating photo.');
+            }
+        }
+
+        // --- FORM SAVE LOGIC WITH DIFF ---
+        document.getElementById('profileForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const updates = {
+                display_name: document.getElementById('displayName').value,
+                full_name: document.getElementById('fullName').value,
+                nic: document.getElementById('nic').value,
+                dob: document.getElementById('dob').value,
+                address: document.getElementById('address').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                phone: document.getElementById('phone').value,
+                job: document.getElementById('job').value,
+                sports_skills: document.getElementById('sports').value,
+                aesthetic_skills: document.getElementById('aesthetic').value
+            };
+
+            const changedFields = [];
+            for (const key in updates) {
+                const originalVal = originalData[key] || '';
+                const newVal = updates[key] || '';
+                
+                if (originalVal !== newVal) {
+                    changedFields.push({
+                        label: fieldLabels[key],
+                        old: originalVal || '(Empty)',
+                        new: newVal || '(Empty)'
+                    });
+                }
+            }
+
+            if (changedFields.length === 0) {
+                alert("No changes detected.");
+                return;
+            }
+
+            pendingUpdates = updates;
+
+            // Populate Modal with Diff
+            const summaryDiv = document.getElementById('changesSummary');
+            summaryDiv.innerHTML = '';
+            
+            changedFields.forEach(field => {
+                summaryDiv.innerHTML += `
+                    <div class="mb-3 pb-3 border-b border-[#353539] last:border-0 last:mb-0 last:pb-0">
+                        <p class="text-[10px] font-bold text-[#8e918f] uppercase tracking-wider mb-1">${field.label}</p>
+                        <div class="flex flex-col gap-1 text-xs">
+                            <div class="flex items-center gap-2 text-error/80 line-through decoration-error/50">
+                                <span class="material-symbols-rounded text-[14px]">remove_circle</span> ${field.old}
+                            </div>
+                            <div class="flex items-center gap-2 text-primary">
+                                <span class="material-symbols-rounded text-[14px]">add_circle</span> ${field.new}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('confirmModal').classList.remove('hidden');
+        });
+
+        // "Discard" action simply closes the modal without saving
+        function closeConfirmModal() { 
+            document.getElementById('confirmModal').classList.add('hidden'); 
+        }
+
+        document.getElementById('confirmSaveBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('confirmSaveBtn');
+            const originalHTML = btn.innerHTML;
+            
+            btn.innerHTML = '<span class="material-symbols-rounded animate-spin">refresh</span> Saving...';
+            btn.disabled = true;
+
+            const { error } = await _supabase.from('profiles').update(pendingUpdates).eq('id', userId);
+            
+            if (!error) {
+                // Update local originalData
+                originalData = { ...originalData, ...pendingUpdates };
+                
+                const nameToShow = pendingUpdates.display_name || pendingUpdates.full_name;
+                document.getElementById('cardName').innerText = nameToShow;
+                
+                closeConfirmModal();
+                toggleEditMode(); // Lock form again
+                
+                // Show success feedback (toast-like) could be added here
+                alert('Profile updated successfully!'); 
+            } else {
+                alert('Error saving: ' + error.message);
+            }
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        });
+
+        init();
+    </script>
+    <div id="global-footer-placeholder"></div>
+    <script src="../js/footer-loader.js"></script>
+</body>
+</html>
